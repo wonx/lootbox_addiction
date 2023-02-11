@@ -13,3 +13,6 @@ The general format of the csv files will be like this:
 2023-02-11 23:40:48,1676158848,SB***-8PSC,2022年里约热内卢锦标赛挑战组印花胶囊,印花 | BIG | 2022年里约热内卢锦标赛,1676158848
 2023-02-11 23:40:48,1676158848,SG***-S8GL,命悬一线武器箱,XM1014 | 锈蚀烈焰,1676158848
 2023-02-11 23:40:48,1676158848,AC***-E2YA,梦魇武器箱,PP-野牛 | 太空猫,1676158848
+
+
+The file split_csv_bydate.py is a tool to split a large csv file containing records comprising many days into individual daily csv files. It is not part of the general workflow of the program, it's just an auxiliary tool to convert old csv files into the current daily file structure.
