@@ -1,0 +1,15 @@
+getlootboxjson.py is the main ingestion script.
+
+It monitors new data from the JSON stream at https://www.csgo.com.cn/api/lotteryHistory and saves to csv files in the csv subdir.
+
+It will use the timestamp field in the JSON data to place the records in daily files, starting by the date in yyyy-mm-dd format (e.g. 2023-02-11_lootboxpurchases.csv). Additionally, it adds a column to the csv, datetime, with the date and time of the purchase, in the UTC timezone.
+
+The general format of the csv files will be like this:
+
+2023-02-11 23:40:41,1676158841,S5***-MUNE,命悬一线武器箱,UMP-45 | 白狼,1676158841
+2023-02-11 23:40:43,1676158843,AN***-PAYG,Espionage Sticker Capsule,印花 | Zap Cat,1676158843
+2023-02-11 23:40:46,1676158846,AH***-TAUL,梦魇武器箱,P2000 | 升天,1676158846
+2023-02-11 23:40:47,1676158847,S5***-MUNE,命悬一线武器箱,MP9（StatTrak™） | 黑砂,1676158847
+2023-02-11 23:40:48,1676158848,SB***-8PSC,2022年里约热内卢锦标赛挑战组印花胶囊,印花 | BIG | 2022年里约热内卢锦标赛,1676158848
+2023-02-11 23:40:48,1676158848,SG***-S8GL,命悬一线武器箱,XM1014 | 锈蚀烈焰,1676158848
+2023-02-11 23:40:48,1676158848,AC***-E2YA,梦魇武器箱,PP-野牛 | 太空猫,1676158848
