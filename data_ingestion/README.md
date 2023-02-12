@@ -27,7 +27,7 @@ datetime,timestamp,user,src,out,time
 
 ## split_csv_bydate.py
 
-The file *split_csv_bydate.py* is a tool to split a large csv file containing records comprising many days into individual daily csv files. It is not part of the general workflow of the program, it's just an auxiliary tool to convert old csv files into the current daily file structure. By default it is hardcoded to look for the *output.csv* file and will generate a series of csv files inside the `split/` directory.
+The file *split_csv_bydate.py* is a tool to split a large csv file containing records comprising many days into individual daily csv files by based on the UNIX timestamp present in the second column. It is not part of the general workflow of the program, it's just an auxiliary tool to convert old csv files into the current daily file structure. By default it is hardcoded to look for the *output.csv* file and will generate a series of csv files inside the `split/` directory.
 
 For instance, it will turn:
 
