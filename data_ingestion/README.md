@@ -15,6 +15,7 @@ It will use the timestamp field in the JSON data to place the records in daily f
 The general format of the csv files will be like this:
 
 ```
+datetime,timestamp,user,src,out,time
 2023-02-11 23:40:41,1676158841,S5***-MUNE,命悬一线武器箱,UMP-45 | 白狼,1676158841
 2023-02-11 23:40:43,1676158843,AN***-PAYG,Espionage Sticker Capsule,印花 | Zap Cat,1676158843
 2023-02-11 23:40:46,1676158846,AH***-TAUL,梦魇武器箱,P2000 | 升天,1676158846
