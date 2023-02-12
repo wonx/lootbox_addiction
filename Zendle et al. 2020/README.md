@@ -18,10 +18,10 @@ Manuscript itself with the study and the details on the gata ingestion and analy
 The file `parsedresults.csv` contains data on 1469913 lootbox openings by 386269 unique users gathered during 66 days. While this data has not been used in the final deliverable, it was used to perform some initial tests on the viability of the project.
 
 ## harmonize_parsedresults.ipynb
-Small jupyter notebook to harmonize the parsedresults.csv dataset to the format I used in this project.
+Small jupyter notebook to harmonize the `parsedresults.csv` dataset to the format I used in this project.
 
 ## parsedresults_harmonized.csv
-Harmonized dataset
+Harmonized dataset.
 
 ## parsedresults_daily
 Harmonized dataset, converted into daily csv files with the help of the `data_ingestion/split_csv_bydate.py` script.
