@@ -1,0 +1,43 @@
+* {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+body {
+    background-color: #272b34;
+    font-family: 'Khula', sans-serif;
+    font-weight: 300;
+    color: white;
+    line-height: 1em;
+    margin: 0;
+  padding: 2em 1em;
+}
+ 
+.graph-container {
+    width: 45%;
+    display: inline-block;
+}
+
+.stat-box {
+  width: 10%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+table {
+  width: 100%;
+  text-align: center;
+  font-size: 150%
+}
+
+table tr {
+  height: 50px;
+}
+
+table tr:hover {
+  background-color: lightgray;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

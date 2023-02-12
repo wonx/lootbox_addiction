@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+  </head>
+ <body>
+  <h1>CS:GO Lootbox monitoring</h1>
+  <div class="graph-container">
+    <div id='chart1' class='chart'></div>
+  </div>
+  <div class="graph-container">
+    <div id='chart2' class='chart'></div>
+  </div>
+  
+  <table>
+    <tr>
+      <th>User</th>
+      <th>Risk score</th>
+    </tr>
+    {% for user in users %}
+      <tr>
+        <td><a href="{{ url_for('user_page', user=user.user) }}">{{ user.user }}</a></td>
+        <td>{{ user.confidence_score }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  
+</body>
+ 
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type='text/javascript'>
+  var graph1 = {{graphJSON1 | safe}};
+  var graph2 = {{graphJSON2 | safe}};
+  Plotly.plot('chart1', graph1, {});
+  Plotly.plot('chart2', graph2, {});
+</script>
+</html>

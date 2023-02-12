@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+  </head>
+ <body>
+  <h1>Daily aggregates for {{ user }} </h1>
+
+  <div class="graph-container">
+    <div id='chart1' class='chart'></div>
+  </div>
+  <div class="graph-container">
+    <div id='chart2' class='chart'></div>
+  </div>
+
+  <div class="stat-box">
+    <table>
+      <tr>
+        <th>Risk Score</th>
+      </tr>
+      <tr>
+        <td>{{ riskscore }}</td>
+      </tr>
+    </table>
+  </div>
+  
+
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Amount spent</th>
+      <th>Losses</th>
+      <th>Number of bets</th>
+    </tr>
+    {% for purchase in userpurchases %}
+      <tr>
+        <td>{{ purchase.date }}</td>
+        <td>{{ purchase.Turnover }}</td>
+        <td>{{ purchase.Hold }}</td>
+        <td>{{ purchase.NumberofBets }}</td>
+        <td><a href="{{ url_for('user_date', user=user, date=purchase.date) }}">Details</a></td>
+      </tr>
+    {% endfor %}
+  </table>
+
+
+  
+</body>
+
+
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type='text/javascript'>
+  var fig1 = {{graphJSON_user | safe}};
+  var fig2 = {{graphJSON_timeday | safe}};
+  Plotly.plot('chart1', fig1, {});
+  Plotly.plot('chart2', fig2, {});
+</script>
+
+
+</html>
