@@ -12,4 +12,4 @@ The app can be launched by running the command:
 
 `python3 app.py`
 
-And it will be available at http://localhost:5000 by default.
+And it will be accessible at http://localhost:5000 by default.
