@@ -4,7 +4,7 @@
 
 *getlootboxjson.py* is the main ingestion script. It gathers data for lootbox purchases for the first person shooter videogame Counter Strike: Global Offensive for the Chinese market available through an API. 
 
-It monitors new data from the JSON stream at https://www.csgo.com.cn/api/lotteryHistory and saves to csv files in the csv subdir. It is thought to be run at periodic intervals as a background process. Since the JSON stream is updated every 10 minutes, anything less than that interval will work. It will automatically take care of duplicated entries.
+It monitors new data from the JSON stream at https://www.csgo.com.cn/api/lotteryHistory and saves to csv files in the `csv` subdir. It is thought to be run at periodic intervals as a background process. Since the JSON stream is updated every 10 minutes, anything less than that interval will work. It will automatically take care of duplicated entries.
 
 For instance, it can be set to run every two minutes using:
 `screen -dmS "lootboxes_date" watch -n120 '/usr/bin/python3 getlootboxjson.py'` 
