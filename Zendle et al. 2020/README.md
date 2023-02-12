@@ -1,8 +1,11 @@
 # How do loot boxes make money? An analysis of a very large dataset of real Chinese CSGO loot box openings
 
 David Zendle, University of York (david.zendle@york.ac.uk)
+
 Elena Petrovskaya, University of York
+
 Heather Wardle, University of Glasgow
+
 
 http://dx.doi.org/10.31234/osf.io/5k2sy
 
