@@ -28,9 +28,9 @@ The general format of the csv files will be like this:
 
 The file *split_csv_bydate.py* is a tool to split a large csv file containing records comprising many days into individual daily csv files. It is not part of the general workflow of the program, it's just an auxiliary tool to convert old csv files into the current daily file structure. By default it is hardcoded to look for the *output.csv* file and will generate a series of csv files inside the `split/` directory.
 
-For instance, it will turn
+For instance, it will turn:
 
-`output.csv`
+```output.csv```
 
 into:
  
