@@ -8,6 +8,7 @@ Heather Wardle, University of Glasgow
 
 
 http://dx.doi.org/10.31234/osf.io/5k2sy
+
 https://osf.io/97ves/?view_only=8ac012cedc9c46f582a1b7e3e77d1a6d
 
 The data that was gathered for this study consists of all loot box opening information published by the Chinese CSGO partner PerfectWorld (https://www.csgo.com.cn/hd/1707/lotteryrecords / https://www.csgo.com.cn/api/lotteryHistory) for the 66 days ranging between 2020-07-29 and 2020-10-03.
