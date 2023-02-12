@@ -10,8 +10,6 @@ Lootbox pipeline
     Cada quant? 
         Tot una vegada cada dia? 
         el del dia actual cada 10 minuts?
-        
-        /home/ubuntu/ssl
 
 3) Scrape prices db
     df_src
