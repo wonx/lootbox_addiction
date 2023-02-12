@@ -1,4 +1,4 @@
-Microtransaction addiction forecasting through lootbox purchases patterns
+# Microtransaction addiction forecasting through lootbox purchases patterns
 
 This will be the expected pipeline:
 Lootbox pipeline
