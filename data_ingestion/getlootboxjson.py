@@ -4,6 +4,9 @@ import datetime
 import subprocess
 import pandas as pd
 
+# Path for the CSV files
+csv_path = 'csv'
+
 # URL for the JSON file
 json_url = "https://www.csgo.com.cn/api/lotteryHistory"
 
@@ -23,7 +26,7 @@ for record in reversed_records:
     formatted_date_time = date_time.strftime("%Y-%m-%d %H:%M:%S")
     date = date_time.strftime("%Y-%m-%d")
     dates.add(date) # add date to set
-    filename = f"{date}_lootboxpurchases.csv"
+    filename = f"{csv_path}/{date}_lootboxpurchases.csv"
 
     # Open the CSV file for appending
     csv_file = open(filename, "a", newline="")
@@ -41,7 +44,7 @@ for record in reversed_records:
 # Remove duplicates in the affected files
 print(f"Affected files: {dates}_lootboxpurchases.csv")
 for date in dates:
-    filename = f"{date}_lootboxpurchases.csv"
+    filename = f"{csv_path}/{date}_lootboxpurchases.csv"
     num_lines = int(subprocess.check_output(['wc', '-l', filename]).decode().split()[0])
     print(f"Lines in {filename} after adding json but before deduplicating: {num_lines}")
 
