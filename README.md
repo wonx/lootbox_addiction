@@ -3,17 +3,15 @@
 This will be the expected pipeline:
 Lootbox pipeline
 
-1) Ingestion script
+1) Ingestion script (from JSON Stream)
+
+2) Scrape translations and prices to create lootbox DB.
 
 2) Merge csv files
     yyyy-mm-dd_lootboxpurchases.csv
-    Cada quant? 
-        Tot una vegada cada dia? 
-        el del dia actual cada 10 minuts?
-
-3) Scrape prices db
-    df_src
-    df_out
+    How often?
+        Once a day for the whole data?
+        Current day only every 10 minutes?
 
 4) Assign zh_en correspondence and value purchases
     Append missing purchases
