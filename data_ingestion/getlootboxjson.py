@@ -3,6 +3,7 @@ import requests
 import datetime
 import subprocess
 import pandas as pd
+import os
 
 # Path for the CSV files
 csv_path = 'csv'
@@ -27,12 +28,20 @@ for record in reversed_records:
     date = date_time.strftime("%Y-%m-%d")
     dates.add(date) # add date to set
     filename = f"{csv_path}/{date}_lootboxpurchases.csv"
+    
+    # Check if the file already exists
+    file_exists = os.path.isfile(filename)
 
     # Open the CSV file for appending
     csv_file = open(filename, "a", newline="")
 
     # Create a CSV writer
     csv_writer = csv.writer(csv_file)
+    
+    # Write the header to the file if it does not exist
+    if not file_exists:
+        csv_writer.writerow(['datetime', 'timestamp', 'user', 'src', 'out', 'time'])
+
 
     # Write the record to the CSV file
     csv_writer.writerow([formatted_date_time, record["timestamp"], record["user"], record["src"], record["out"], record["time"]])
