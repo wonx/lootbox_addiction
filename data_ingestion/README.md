@@ -52,3 +52,8 @@ into:
 2023-02-12_lootboxpurchases.csv
 
 ```
+
+## mergecsv.py
+
+Does exactly the opposite of `split_csv_bydate.py`, it merges several csv files into a single `merged.csv`.
+It's actually not being used (see `generate_df_purchases.py` for its replacement), but still kept here for historical reasons. 
