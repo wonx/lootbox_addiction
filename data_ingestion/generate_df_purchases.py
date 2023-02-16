@@ -38,6 +38,9 @@ def append_new_data(csv_path="../data_ingestion/csv/", output_file="../processed
     # Append new info to main dataframe and remove duplicate rows
     main_df = pd.concat([main_df, pd.read_csv(csv_path + most_recent_csv)], ignore_index=True, axis=0)
     main_df.drop_duplicates(inplace=True)
+    
+    main_df['time'] = main_df['time'].astype(int)
+    main_df['timestamp'] = main_df['timestamp'].astype(int)
     print("  After concatenating: ", main_df.shape)
     main_df.to_pickle(output_file)
     print("...done")
