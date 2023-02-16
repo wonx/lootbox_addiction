@@ -13,9 +13,12 @@ import argparse
 
 
 def generate_full_dataframe(csv_path='../data_ingestion/csv/', output_file="../processed_dataframes/df_purchases.pkl"):
-    print(f"Appending new data from {csv_path} to main dataframe at {output_file}")
+    print(f"Compiling data from {csv_path} to main dataframe at {output_file}")
     all_files = glob.glob(os.path.join(csv_path , "*.csv"))
     df = pd.concat((pd.read_csv(f) for f in all_files), ignore_index=True, axis=0)
+    df['timestamp'] = df['timestamp'].astype(int) # Force them to be int, sometimes they appear as float in the csv for some reason
+    df['time'] = df['time'].astype(int)
+    print(df.info())
     df.to_pickle(output_file)
     print("Full dataframe generated at", output_file) 
     print(df.shape)
