@@ -12,7 +12,8 @@ import os
 import argparse
 
 
-def generate_full_dataframe(csv_path='../data_ingestion/csv/', output_file="../data_merging/df_purchases.pkl"):
+def generate_full_dataframe(csv_path='../data_ingestion/csv/', output_file="../processed_dataframes/df_purchases.pkl"):
+    print(f"Appending new data from {csv_path} to main dataframe at {output_file}")
     all_files = glob.glob(os.path.join(csv_path , "*.csv"))
     df = pd.concat((pd.read_csv(f) for f in all_files), ignore_index=True, axis=0)
     df.to_pickle(output_file)
@@ -20,7 +21,7 @@ def generate_full_dataframe(csv_path='../data_ingestion/csv/', output_file="../d
     print(df.shape)
     return df
     
-def append_new_data(csv_path="../data_ingestion/csv/", output_file="../data_merging/df_purchases.pkl"):
+def append_new_data(csv_path="../data_ingestion/csv/", output_file="../processed_dataframes/df_purchases.pkl"):
     print(f"Appending new data from {csv_path} to main dataframe at {output_file}")
     #main_df = output_file
     main_df = pd.read_pickle(output_file)
@@ -47,7 +48,7 @@ if __name__ == '__main__':
                         help='Append new data')
     parser.add_argument('--csv_path', type=str, default='../data_ingestion/csv/',
                         help='Output pickle dataframe name with path')
-    parser.add_argument('--output_file', type=str, default='../data_merging/df_purchases.pkl',
+    parser.add_argument('--output_file', type=str, default='../processed_dataframes/df_purchases.pkl',
                         help='Output pickle dataframe name with path')
     args = parser.parse_args()
 
