@@ -7,6 +7,7 @@
 It monitors new data from the JSON stream at https://www.csgo.com.cn/api/lotteryHistory and saves to csv files in the `csv` subdir. It is thought to be run at periodic intervals as a background process. Since the JSON stream is updated every 10 minutes, anything less than that interval will work. It will automatically take care of duplicated entries.
 
 For instance, it can be set to run every two minutes using:
+
 `screen -dmS "lootboxes_date" watch -n120 '/usr/bin/python3 getlootboxjson.py'` 
 
 
@@ -24,6 +25,15 @@ datetime,timestamp,user,src,out,time
 2023-02-11 23:40:48,1676158848,SG***-S8GL,命悬一线武器箱,XM1014 | 锈蚀烈焰,1676158848
 2023-02-11 23:40:48,1676158848,AC***-E2YA,梦魇武器箱,PP-野牛 | 太空猫,1676158848
 ```
+
+## generate_df_purchases.py
+
+*generate_df_purchases.py* is the main tool responsible for generating the pickle files upon which the app relies. It is able to generate the `df_purchases` dataframe from scratch from all the individual `.csv` files in `.csv/` subdir, as a one time thing. Its main purpose, however, is to be ran periodically (e.g. every 10 minutes) to update that dataframe with the new information that has been added to the newest daily csv. By default, it will place the df_purchases.pkl file inside `./processed_dataframes/`. Run `python generate_df_purchases.py --help` to see the available parameters.
+
+For instance, it can be set to run every 10 minutes using:
+
+`screen -dmS "lootbox_generate_df_purchases" watch -n600 '/usr/bin/python3 generate_df_purchases.py --append-new-data'` 
+
 
 ## split_csv_bydate.py
 
@@ -50,10 +60,9 @@ into:
 2023-02-10_lootboxpurchases.csv
 2023-02-11_lootboxpurchases.csv
 2023-02-12_lootboxpurchases.csv
-
 ```
 
 ## mergecsv.py
 
-Does exactly the opposite of `split_csv_bydate.py`, it merges several csv files into a single `merged.csv`.
+Another auxiliary tool. *mergecsv.py* does exactly the opposite of `split_csv_bydate.py`, it merges several csv files into a single `merged.csv`.
 It's actually not being used (see `generate_df_purchases.py` for its replacement), but still kept here for historical reasons. 
