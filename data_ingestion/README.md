@@ -48,7 +48,7 @@ The resulting dataframe, `df_purchases` will have the following structure:
 
 *generate_df_purchases_value.py* is a script that adds values to the rows in df_purchases and returns a `df_purchases_value` dataframe, that then is placed in `../processed_dataframes/df_purchases_value.pkl`. It checks which rows have been added to `df_purchases`, parses the new features, processes their values, and appends them to `df_purchases_value`. It can process 30-50 lines per second, depending on the cpu speed (so, processing the whole dataset can take hours). It is meant to be ran periodically as a background process, for instance, every 30 minutes:
 
-`screen -S "lootbox_generate_df_purchases_value" -dm -L -Logfile ../log/df_purchases_value.log sh -c 'while true; do /home/ubuntu/miniconda3/bin/python3 generate_df_purchases_value.py; sleep 180; done'` 
+`screen -S "lootbox_generate_df_purchases_value" -dm -L -Logfile ../log/df_purchases_value.log sh -c 'while true; do /usr/bin/python3 generate_df_purchases_value.py; sleep 180; done'` 
 
 The resulting dataframe, `df_purchases_value` will have the following structure:
 |         | datetime_zh         | timestamp  | user       | src                                  | src_en                               | src_type         | src_value | out                                         | out_1_nopar | out_1_par | out_2_nopar | out_2_par_1 | out_2_par_2 | out_3                  | out_type            | out_value |
