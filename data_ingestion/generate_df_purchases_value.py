@@ -302,4 +302,3 @@ if __name__ == '__main__':
         
         # Remove lockfile
         os.remove(lockfile_path)
-        print("Lockfile removed.")
