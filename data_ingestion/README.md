@@ -34,6 +34,29 @@ For instance, it can be set to run every 10 minutes using:
 
 `screen -dmS "lootbox_generate_df_purchases" watch -n600 '/usr/bin/python3 generate_df_purchases.py --append-new-data'` 
 
+The resulting dataframe, `df_purchases` will have the following structure:
+
+|         |            datetime |  timestamp |       user |                                      src |                                           out |       time |
+|--------:|--------------------:|-----------:|-----------:|-----------------------------------------:|----------------------------------------------:|-----------:|
+| 1627658 | 2023-02-17 15:32:55 | 1676647975 | S9***-CHVJ |                               左轮武器箱 |                        沙漠之鹰 \| 科林斯遗产 | 1676647975 |
+| 1627659 | 2023-02-17 15:32:55 | 1676647975 | SN***-FPTL | 2022年里约热内卢锦标赛传奇组亲笔签名胶囊 |      印花 \| Snappi \| 2022年里约热内卢锦标赛 | 1676647975 |
+| 1627660 | 2023-02-17 15:32:55 | 1676647975 | AB***-NKVA |     2022年里约热内卢锦标赛挑战组印花胶囊 |    印花 \| Vitality \| 2022年里约热内卢锦标赛 | 1676647975 |
+| 1627661 | 2023-02-17 15:32:55 | 1676647975 | SL***-86PQ |                                 光环胶囊 |                                  印花 \| 烂钱 | 1676647975 |
+| 1627662 | 2023-02-17 15:32:55 | 1676647975 | A3***-8XNE |     2022年里约热内卢锦标赛传奇组印花胶囊 | 印花 \| Team Spirit \| 2022年里约热内卢锦标赛 | 1676647975 |
+
+## generate_df_purchases_value.py
+
+*generate_df_purchases_value.py* is a script that adds values to the rows in df_purchases and returns a `df_purchases_value` dataframe, that then is placed in `../processed_dataframes/df_purchases_value.pkl`. It checks which rows have been added to `df_purchases`, parses the new features, processes their values, and appends them to `df_purchases_value`. It can process 30-50 lines per second, depending on the cpu speed (so, processing the whole dataset can take hours). It is meant to be ran periodically as a background process, for instance, every 30 minutes:
+
+`screen -dmS "lootbox_generate_df_purchases" watch -n1800 '/usr/bin/python3 generate_df_purchases_value.py'` 
+
+The resulting dataframe, `df_purchases_value` will have the following structure:
+|         | datetime_zh         | timestamp  | user       | src                                  | src_en                               | src_type         | src_value | out                                         | out_1_nopar | out_1_par | out_2_nopar | out_2_par_1 | out_2_par_2 | out_3                  | out_type            | out_value |
+|---------|---------------------|------------|------------|--------------------------------------|--------------------------------------|------------------|-----------|---------------------------------------------|-------------|-----------|-------------|-------------|-------------|------------------------|---------------------|-----------|
+| 1596855 | 2023-02-17 11:17:28 | 1676603848 | SS***-J2HQ | 2022年里约热内卢锦标赛挑战组印花胶囊 | Rio 2022 Challengers Sticker Capsule | Sticker Capsules | 0.95      | 印花 \| MOUZ \| 2022年里约热内卢锦标赛      | 印花        |           | MOUZ        |             |             | 2022年里约热内卢锦标赛 | Tournament Stickers | 0.1       |
+| 1596859 | 2023-02-17 11:17:29 | 1676603849 | SM***-LDZJ | 2022年里约热内卢锦标赛挑战组印花胶囊 | Rio 2022 Challengers Sticker Capsule | Sticker Capsules | 0.95      | 印花 \| OG（闪耀）\| 2022年里约热内卢锦标赛 | 印花        |           | OG          | 闪耀        |             | 2022年里约热内卢锦标赛 | Tournament Stickers | 0.03      |
+
+
 
 ## split_csv_bydate.py
 
