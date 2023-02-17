@@ -41,11 +41,14 @@ def parse_new_values(new_rows):
     new_rows['out_1_nopar'] = new_rows['out_1'].str.replace(r'（[^（）]*）(?=[^（）]*$)', '', regex=True)
     new_rows['out_2_nopar'] = new_rows['out_2'].str.replace(r'（[^（）]*）(?=[^（）]*$)', '', regex=True)
     
-    # out_2_par has commas, so the column can be splitted into more features
-    # print(new_rows.head(5))
-    new_rows['out_2_par'] = new_rows['out_2_par'].fillna('') # If all the rows contain out_2_par as Nan, it fails, so convert to empty string
-    new_rows[['out_2_par_1', 'out_2_par_2']] =  new_rows['out_2_par'].str.split("，", expand=True)
-    
+    # out_2_par has commas, so the column can be splitted into more features. 
+    #  might fail if all the rows are NaN, so we use a try block to control these cases
+    try:
+        new_rows[['out_2_par_1', 'out_2_par_2']] = new_rows['out_2_par'].str.split("，", expand=True)
+    except ValueError:
+        new_rows['out_2_par_1'] = np.nan
+        new_rows['out_2_par_2'] = np.nan
+
     # Rearrange the features and convert the Nan to empty strings
     new_rows = new_rows[['datetime_zh', 'timestamp', 'user', 'src', 'out', 'out_1_nopar', 'out_1_par', 'out_2_nopar', 'out_2_par_1', 'out_2_par_2', 'out_3']]
     new_rows = new_rows.fillna('')
