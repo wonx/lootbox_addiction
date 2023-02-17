@@ -12,8 +12,10 @@ app = Flask(__name__)
 # Import pickle dataframes
 df_purchases_analytic_predictions =  pd.read_pickle('./df_pickles/df_purchases_analytic_predictions.pkl')
 df_purchases_dailyaggregate =  pd.read_pickle('./df_pickles/df_purchases_dailyaggregate.pkl')
+#df_purchases_analytic_predictions =  pd.read_pickle('../processed_dataframes/df_purchases_analytic_predictions.pkl')
+#df_purchases_dailyaggregate =  pd.read_pickle('../processed_dataframes/df_purchases_dailyaggregate.pkl')
 df_purchases_daily = df_purchases_dailyaggregate.groupby('date').agg({'Turnover':'sum', 'Hold': 'sum', 'NumberofBets': 'count'}).reset_index()
-df_purchases_value =  pd.read_pickle('./df_pickles/df_purchases_value.pkl')
+df_purchases_value =  pd.read_pickle('../processed_dataframes/df_purchases_value.pkl')
 
 
 @app.route('/')
