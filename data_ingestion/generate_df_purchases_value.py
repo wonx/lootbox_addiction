@@ -286,7 +286,7 @@ def process_new_rows():
     print("\nSaving df_purchases_value to pickle")
     df_purchases_value.to_pickle('../processed_dataframes/df_purchases_value.pkl')
     
-    print("All done!")
+    
     
     
 if __name__ == '__main__':
@@ -305,3 +305,5 @@ if __name__ == '__main__':
         
         # Remove lockfile
         os.remove(lockfile_path)
+        
+        print("All done!")
