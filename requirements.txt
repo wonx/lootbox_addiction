@@ -1,0 +1,10 @@
+###### Requirements without Version Specifiers ######
+numpy
+seaborn
+plotly
+
+
+###### Requirements with Version Specifiers ######
+scikit-learn==1.0.2
+pandas==1.4.2
+beautifulsoup4==4.11.1
