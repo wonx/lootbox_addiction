@@ -148,5 +148,10 @@ if __name__ == '__main__':
     print("Generating weekly analytic datasets...")
     generate_weekly_analytics()
     
+    # Generate whole analytic dataset (kinda redundant...)
+    print("Generating analytic dataset for the whole data..."
+    df_purchases_analytic = get_analytic_dataset(df_purchases_dailyaggregate)
+    df_purchases_analytic.to_pickle('../processed_dataframes/df_purchases_analytic.pkl')
+    
     print("All done!")
     
