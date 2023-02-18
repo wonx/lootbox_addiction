@@ -5,17 +5,33 @@ import pandas as pd
 import json
 import plotly
 import plotly.express as px
+from apscheduler.schedulers.background import BackgroundScheduler
+
  
 # Create Home Page Route
 app = Flask(__name__)
 
-# Import pickle dataframes
-df_purchases_analytic_predictions =  pd.read_pickle('./df_pickles/df_purchases_analytic_predictions.pkl')
-df_purchases_dailyaggregate =  pd.read_pickle('./df_pickles/df_purchases_dailyaggregate.pkl')
-#df_purchases_analytic_predictions =  pd.read_pickle('../processed_dataframes/df_purchases_analytic_predictions.pkl')
-#df_purchases_dailyaggregate =  pd.read_pickle('../processed_dataframes/df_purchases_dailyaggregate.pkl')
-df_purchases_daily = df_purchases_dailyaggregate.groupby('date').agg({'Turnover':'sum', 'Hold': 'sum', 'NumberofBets': 'count'}).reset_index()
-df_purchases_value =  pd.read_pickle('../processed_dataframes/df_purchases_value.pkl')
+def import_dataframes():
+    # Import pickle dataframes
+    global df_purchases_analytic_predictions
+    global df_purchases_dailyaggregate
+    global df_purchases_daily
+    global df_purchases_value
+    
+    
+    print("Refreshing datagrames...")
+    df_purchases_analytic_predictions =  pd.read_pickle('./df_pickles/df_purchases_analytic_predictions.pkl')
+    #df_purchases_analytic_predictions = pd.read_pickle('../processed_dataframes/df_purchases_analytic_predictions.pkl')
+    df_purchases_dailyaggregate = pd.read_pickle('../processed_dataframes/df_purchases_dailyaggregate.pkl')
+    df_purchases_daily = df_purchases_dailyaggregate.groupby('date').agg({'Turnover':'sum', 'Hold': 'sum', 'NumberofBets': 'count'}).reset_index()
+    df_purchases_value =  pd.read_pickle('../processed_dataframes/df_purchases_value.pkl')
+    
+import_dataframes()
+
+# Start scheduled task 
+scheduler = BackgroundScheduler()
+scheduler.add_job(import_dataframes, 'interval', minutes=10)
+scheduler.start()
 
 
 @app.route('/')
