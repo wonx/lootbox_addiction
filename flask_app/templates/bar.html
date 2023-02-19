@@ -22,7 +22,7 @@
       <tr>
         <td>{{ user.user }}</a></td>
         <td>{{ user.confidence_score }}</td>
-        <td><span style="color: {% if user.improving == '▲' %}green{% elif user.improving == '▼' %}red{% endif %};">{{ user.improving }}</span></td>
+        <td><span style="color: {% if user.improving == '▲' %}red{% elif user.improving == '▼' %}green{% endif %};">{{ user.improving }}</span></td>
         <td><a href="{{ url_for('user_page', user=user.user) }}">Details</a></td>
       </tr>
     {% endfor %}

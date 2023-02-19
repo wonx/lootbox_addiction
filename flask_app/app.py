@@ -13,11 +13,11 @@ app = Flask(__name__)
 
 def get_arrow(value):
     if value == 1:
-        return '▲'
+        return '▼'
     elif value == 0:
         return '='
     elif value == -1:
-        return '▼'
+        return '▲'
     else:
         return ''
 
