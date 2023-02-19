@@ -11,16 +11,19 @@
   <div class="graph-container">
     <div id='chart2' class='chart'></div>
   </div>
-  
   <table>
     <tr>
       <th>User</th>
       <th>Risk score</th>
+      <th>Tendency</th>
+      <th></th>
     </tr>
     {% for user in users %}
       <tr>
-        <td><a href="{{ url_for('user_page', user=user.user) }}">{{ user.user }}</a></td>
+        <td>{{ user.user }}</a></td>
         <td>{{ user.confidence_score }}</td>
+        <td><span style="color: {% if user.improving == '▲' %}green{% elif user.improving == '▼' %}red{% endif %};">{{ user.improving }}</span></td>
+        <td><a href="{{ url_for('user_page', user=user.user) }}">Details</a></td>
       </tr>
     {% endfor %}
   </table>

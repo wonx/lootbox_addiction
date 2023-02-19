@@ -11,6 +11,16 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # Create Home Page Route
 app = Flask(__name__)
 
+def get_arrow(value):
+    if value == 1:
+        return '▲'
+    elif value == 0:
+        return '='
+    elif value == -1:
+        return '▼'
+    else:
+        return ''
+
 def import_dataframes():
     # Import pickle dataframes
     global df_purchases_analytic_predictions
@@ -47,7 +57,13 @@ def bar_with_plotly():
     graphJSON1 = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
     graphJSON2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
 
-    dict_userpredictions = df_purchases_analytic_predictions[['user', 'confidence_score']].sort_values(by='confidence_score', ascending=False).head(100).to_dict("records")
+    dict_userpredictions = df_purchases_analytic_predictions[['user', 'confidence_score', 'improving']].sort_values(by='confidence_score', ascending=False).head(100).to_dict("records")
+    
+    # Convert -1, 0 and 1 to triangles
+    for record in dict_userpredictions:
+        record['improving'] = get_arrow(record['improving'])
+    
+    
     # Round to 3 decimal points
     for d in dict_userpredictions:
         d['confidence_score'] = round(d['confidence_score']*100, 1)
