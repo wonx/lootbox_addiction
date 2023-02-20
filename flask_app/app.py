@@ -61,13 +61,26 @@ def bar_with_plotly():
      
     # Create Bar chart 1
     #fig1 = px.line(df_purchases_daily, x='date', y='NumberofBets', title='Number of bets per day')
-    fig1 = px.line(df_byminute_interpolated_limit, x=df_byminute_interpolated_limit.index, y='out', title='Total purchases (5m intervals)', labels={
+    fig1 = px.line(df_byminute_interpolated_limit, 
+                   x=df_byminute_interpolated_limit.index, 
+                   y='out', 
+                   title='Total purchases (5m intervals)', 
+                   labels={
                      "out": "Amount of purchases",
-                     "index": ""},)
+                     "index": ""})
+    fig1.update_layout({
+        'plot_bgcolor': 'rgba(0,0,0,0)',
+        'paper_bgcolor': 'rgba(0,0,0,0)',
+        'font_color': 'white'
+    })
 
     # Create Bar chart 2
-    #fig2 = px.line(df_purchases_daily, x='date', y='Hold', title='Hold per day', color_discrete_sequence=["#ff97ff"])
     fig2 = px.imshow(df_top_users)
+    fig2.update_layout({
+        'plot_bgcolor': 'rgba(0,0,0,0)',
+        'paper_bgcolor': 'rgba(0,0,0,0)',
+        'font_color': 'white'
+    })
 
     # Create graphJSONs
     graphJSON1 = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
