@@ -6,20 +6,12 @@ import json
 import plotly
 import plotly.express as px
 from apscheduler.schedulers.background import BackgroundScheduler
+import datetime
+import helpers
 
  
 # Create Home Page Route
 app = Flask(__name__)
-
-def get_arrow(value):
-    if value == 1:
-        return '▼'
-    elif value == 0:
-        return '='
-    elif value == -1:
-        return '▲'
-    else:
-        return ''
 
 def import_dataframes():
     # Import pickle dataframes
@@ -27,13 +19,34 @@ def import_dataframes():
     global df_purchases_dailyaggregate
     global df_purchases_daily
     global df_purchases_value
+    global df_byminute_interpolated_limit
+    global df_top_users
     
     
-    print("Refreshing datagrames...")
+    print("Refreshing dataframes...")
     df_purchases_analytic_predictions = pd.read_pickle('../processed_dataframes/df_purchases_analytic_predictions.pkl')
     df_purchases_dailyaggregate = pd.read_pickle('../processed_dataframes/df_purchases_dailyaggregate.pkl')
     df_purchases_daily = df_purchases_dailyaggregate.groupby('date').agg({'Turnover':'sum', 'Hold': 'sum', 'NumberofBets': 'count'}).reset_index()
     df_purchases_value =  pd.read_pickle('../processed_dataframes/df_purchases_value.pkl')
+    
+    # Determine the last week period
+    enddate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # right now, to string
+    startdate = datetime.datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
+    startdate -= datetime.timedelta(seconds=604800) # a day ago
+    startdate = startdate.strftime("%Y-%m-%d %H:%M:%S") # convert back to string
+    
+    # Importing raw purchases dataset and limiting to one week
+    df_purchases = pd.read_pickle("../processed_dataframes/df_purchases.pkl")
+    df_purchases['datetime'] = pd.to_datetime(df_purchases['datetime'])
+    df_purchases.set_index('datetime', inplace=True)
+    df_purchases = helpers.get_df_period(df_purchases, startdate, enddate) # this is completely redundant, as it's also in the helpers.py file. Can be optimized.
+
+    # Aggregate and interpolate df_purchases by 5 minutes for the last week
+    df_by_second_interpolated = helpers.get_df_bysecond_interpolated(df_purchases, startdate, enddate)
+    df_byminute_interpolated_limit = df_by_second_interpolated.resample("5T").sum()
+    
+    # Dataframe for the heatmap
+    df_top_users = helpers.get_df_top_users(df_purchases)
     
 import_dataframes()
 
@@ -47,11 +60,14 @@ scheduler.start()
 def bar_with_plotly():
      
     # Create Bar chart 1
-    fig1 = px.line(df_purchases_daily, x='date', y='NumberofBets', title='Number of bets per day')
+    #fig1 = px.line(df_purchases_daily, x='date', y='NumberofBets', title='Number of bets per day')
+    fig1 = px.line(df_byminute_interpolated_limit, x=df_byminute_interpolated_limit.index, y='out', title='Total purchases (5m intervals)', labels={
+                     "out": "Amount of purchases",
+                     "index": ""},)
 
     # Create Bar chart 2
-    #fig2 = px.bar(df, x='City', y='Age', color='Country', barmode='group')
-    fig2 = px.line(df_purchases_daily, x='date', y='Hold', title='Hold per day', color_discrete_sequence=["#ff97ff"])
+    #fig2 = px.line(df_purchases_daily, x='date', y='Hold', title='Hold per day', color_discrete_sequence=["#ff97ff"])
+    fig2 = px.imshow(df_top_users)
 
     # Create graphJSONs
     graphJSON1 = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
@@ -61,7 +77,7 @@ def bar_with_plotly():
     
     # Convert -1, 0 and 1 to triangles
     for record in dict_userpredictions:
-        record['improving'] = get_arrow(record['improving'])
+        record['improving'] = helpers.get_arrow(record['improving'])
     
     
     # Round to 3 decimal points
