@@ -21,10 +21,12 @@ def import_dataframes():
     global df_purchases_value
     global df_byminute_interpolated_limit
     global df_top_users
+    global df_purchases_analytic_predictions_date
     
     
     print("Refreshing dataframes...")
     df_purchases_analytic_predictions = pd.read_pickle('../processed_dataframes/df_purchases_analytic_predictions.pkl')
+    df_purchases_analytic_predictions_date = pd.read_pickle('../processed_dataframes/df_purchases_analytic_predictions_date.pkl')
     df_purchases_dailyaggregate = pd.read_pickle('../processed_dataframes/df_purchases_dailyaggregate.pkl')
     df_purchases_daily = df_purchases_dailyaggregate.groupby('date').agg({'Turnover':'sum', 'Hold': 'sum', 'NumberofBets': 'count'}).reset_index()
     df_purchases_value =  pd.read_pickle('../processed_dataframes/df_purchases_value.pkl')
@@ -59,12 +61,13 @@ scheduler.start()
 @app.route('/')
 def bar_with_plotly():
      
-    # Create Bar chart 1
+    # Purchases during last week
     #fig1 = px.line(df_purchases_daily, x='date', y='NumberofBets', title='Number of bets per day')
     fig1 = px.line(df_byminute_interpolated_limit, 
                    x=df_byminute_interpolated_limit.index, 
                    y='out', 
                    title='Total purchases (5m intervals)', 
+                   color_discrete_sequence=["#fca903"],
                    labels={
                      "out": "Amount of purchases",
                      "index": ""})
@@ -74,8 +77,8 @@ def bar_with_plotly():
         'font_color': 'white'
     })
 
-    # Create Bar chart 2
-    fig2 = px.imshow(df_top_users)
+    # Heatmap
+    fig2 = px.imshow(df_top_users, color_continuous_scale='Thermal')
     fig2.update_layout({
         'plot_bgcolor': 'rgba(0,0,0,0)',
         'paper_bgcolor': 'rgba(0,0,0,0)',
@@ -107,10 +110,41 @@ def user_page(user):
 
     # Generate the plot using the username
     #  purchases per day
-    fig1 = px.bar(df_purchases_dailyaggregate[df_purchases_dailyaggregate['user'] == user], x='date', y='NumberofBets', title='Bets per day', color_discrete_sequence=["#5597ff"])
+    fig1 = px.bar(df_purchases_dailyaggregate[df_purchases_dailyaggregate['user'] == user], 
+                  x='date', 
+                  y='NumberofBets', 
+                  title='Lootbox purchases per day', 
+                  color_discrete_sequence=["#5597ff"],                 
+                  labels={
+                     "date": "",
+                     "NumberofBets": ""})
+    fig1.update_layout({
+        'plot_bgcolor': 'rgba(0,0,0,0)',
+        'paper_bgcolor': 'rgba(0,0,0,0)',
+        'font_color': 'white'
+    })
+    
+    # Risk score evolution
+    userfilter = df_purchases_analytic_predictions_date['user'] == user
+    risk_score_evolution = df_purchases_analytic_predictions_date[userfilter].sort_values(by='date')
+    
     #  purchases by time of day
-    purchase_by_hour = df_purchases_value[df_purchases_value['user']  == user].groupby([df_purchases_value['datetime_zh'].dt.hour], as_index=False).count().reset_index()
-    fig2 = px.bar(purchase_by_hour, x='index', y='out_value', title='Lootbox purchases per time of day', color_discrete_sequence=["#559733"])
+    #purchase_by_hour = df_purchases_value[df_purchases_value['user']  == user].groupby([df_purchases_value['datetime_zh'].dt.hour], as_index=False).count().reset_index()
+    
+    fig2 = px.line(risk_score_evolution, 
+                  x='date', 
+                  y='confidence_score', 
+                  title='Risk score evolution', 
+                  color_discrete_sequence=["red"],
+                  labels={
+                     "date": "",
+                     "confidence_score": ""})
+    
+    fig2.update_layout({
+        'plot_bgcolor': 'rgba(0,0,0,0)',
+        'paper_bgcolor': 'rgba(0,0,0,0)',
+        'font_color': 'white'
+    })
 
     # Create graphJSONs
     graphJSON_user = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
