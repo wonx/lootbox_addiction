@@ -1,10 +1,12 @@
 <!doctype html>
 <html>
   <head>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}" >
   </head>
  <body>
-  <h1>CS:GO Lootbox monitoring</h1>
+  <div class="logo">
+    <img src="{{url_for('static', filename='gameguard_logo.png')}}" height="200"/>
+  </div>
   <div class="plot-wrapper">
     <div class="graph-container">
       <div id='chart1' class='chart'></div>
@@ -13,7 +15,7 @@
       <div id='chart2' class='chart'></div>
     </div>
   </div>
-  <table>
+  <table class="center">
     <tr>
       <th>User</th>
       <th>Risk score</th>
@@ -29,7 +31,6 @@
       </tr>
     {% endfor %}
   </table>
-
   
 </body>
  

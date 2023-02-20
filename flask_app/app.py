@@ -67,7 +67,7 @@ def bar_with_plotly():
                    x=df_byminute_interpolated_limit.index, 
                    y='out', 
                    title='Total purchases (5m intervals)', 
-                   color_discrete_sequence=["#fca903"],
+                   color_discrete_sequence=["#ff9900"],
                    labels={
                      "out": "Amount of purchases",
                      "index": ""})
@@ -114,7 +114,7 @@ def user_page(user):
                   x='date', 
                   y='NumberofBets', 
                   title='Lootbox purchases per day', 
-                  color_discrete_sequence=["#5597ff"],                 
+                  color_discrete_sequence=["#ff9900"],                 
                   labels={
                      "date": "",
                      "NumberofBets": ""})

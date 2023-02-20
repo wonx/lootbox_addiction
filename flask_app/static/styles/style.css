@@ -11,6 +11,13 @@ body {
     margin: 0;
   padding: 2em 1em;
 }
+
+.logo {
+  width: 200px;
+  height: 200px;
+  top: 0;
+  left: 0;
+}
  
 .graph-container {
     width: 45%;
@@ -27,10 +34,15 @@ body {
   text-align: center;
 }
 
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 table {
-  width: 100%;
+  width: 80%;
   text-align: center;
-  font-size: 150%
+  font-size: 130%
 }
 
 table tr {
