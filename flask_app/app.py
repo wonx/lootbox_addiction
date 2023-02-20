@@ -151,7 +151,9 @@ def user_page(user):
     graphJSON_timeday = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
 
     # Table with the purchases for that user
-    dict_userpurchases = df_purchases_dailyaggregate[df_purchases_dailyaggregate['user'] == user].sort_values(by='date', ascending=False).to_dict("records")
+    dict_userpurchases = df_purchases_dailyaggregate[df_purchases_dailyaggregate['user'] == user].sort_values(by='date', ascending=False)
+    dict_userpurchases['date'] = dict_userpurchases['date'].dt.strftime('%Y-%m-%d')
+    dict_userpurchases = dict_userpurchases.to_dict("records")
 
     # Stats for that user
     riskscore = round(df_purchases_analytic_predictions['confidence_score'][df_purchases_analytic_predictions['user'] == user].item()*100, 1)
