@@ -66,10 +66,10 @@ def bar_with_plotly():
     fig1 = px.line(df_byminute_interpolated_limit, 
                    x=df_byminute_interpolated_limit.index, 
                    y='out', 
-                   title='Total purchases (5m intervals)', 
+                   title='', 
                    color_discrete_sequence=["#ff9900"],
                    labels={
-                     "out": "Amount of purchases",
+                     "out": "Amount of purchases (5m agg.)",
                      "index": ""})
     fig1.update_layout({
         'plot_bgcolor': 'rgba(0,0,0,0)',
@@ -78,11 +78,15 @@ def bar_with_plotly():
     })
 
     # Heatmap
-    fig2 = px.imshow(df_top_users, color_continuous_scale='Thermal')
+    fig2 = px.imshow(df_top_users, 
+                     color_continuous_scale='Thermal', 
+                     labels={
+                         "y": "Purchases per day"})
     fig2.update_layout({
         'plot_bgcolor': 'rgba(0,0,0,0)',
         'paper_bgcolor': 'rgba(0,0,0,0)',
-        'font_color': 'white'
+        'font_color': 'white',
+        'yaxis': {'side': 'left'}
     })
 
     # Create graphJSONs
