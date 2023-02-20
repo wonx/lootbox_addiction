@@ -89,7 +89,7 @@ def bar_with_plotly():
     graphJSON1 = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
     graphJSON2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
 
-    dict_userpredictions = df_purchases_analytic_predictions[['user', 'confidence_score', 'improving']].sort_values(by='confidence_score', ascending=False).head(100).to_dict("records")
+    dict_userpredictions = df_purchases_analytic_predictions[['user', 'confidence_score', 'improving']].sort_values(by='confidence_score', ascending=False).head(150).to_dict("records")
     
     # Convert -1, 0 and 1 to triangles
     for record in dict_userpredictions:

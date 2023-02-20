@@ -23,7 +23,8 @@ def get_dailyaggregate(df_purchases_value):
     return(df_purchases_dailyaggregate)
 
 
-def get_analytic_dataset(df_purchases_dailyaggregate, datelimit=datetime.date.today()):
+def get_analytic_dataset(df_purchases_dailyaggregate, datelimit=datetime.date.today().strftime('%Y-%m-%d')):
+    
     # New empty dataframe
     df_purchases_analytic = pd.DataFrame()
     
@@ -31,7 +32,7 @@ def get_analytic_dataset(df_purchases_dailyaggregate, datelimit=datetime.date.to
     df_purchases_dailyaggregate['date'] = pd.to_datetime(df_purchases_dailyaggregate['date'])
     
     # Only keep those values before the date limit
-    df_purchases_dailyaggregate = df_purchases_dailyaggregate[df_purchases_dailyaggregate['date'] < datelimit]
+    df_purchases_dailyaggregate = df_purchases_dailyaggregate[df_purchases_dailyaggregate['date'] <= datelimit]
 
     # 1. sum_stakes_fixedodds (sum of turnovers?)
     df_purchases_analytic['sum_stakes_fixedodds'] = df_purchases_dailyaggregate.groupby('user')['Turnover'].sum()
@@ -100,7 +101,7 @@ def generate_weekly_analytics():
         print("Generating analytic dataset for ending date:", date)
         print(get_analytic_dataset(df_purchases_dailyaggregate, datelimit=date).shape)
         df_purchases_analytic = get_analytic_dataset(df_purchases_dailyaggregate, datelimit=date)
-        df_purchases_analytic.to_pickle(f'../processed_dataframes/analytic/{date}_df_purchases_analytic.pkl')
+        df_purchases_analytic.to_pickle(f'../processed_dataframes/df_purchases_analytic_weekly/{date}_df_purchases_analytic.pkl')
 
 
 
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     generate_weekly_analytics()
     
     # Generate whole analytic dataset (kinda redundant...)
-    print("Generating analytic dataset for the whole data..."
+    print("Generating analytic dataset for the whole data...")
     df_purchases_analytic = get_analytic_dataset(df_purchases_dailyaggregate)
     df_purchases_analytic.to_pickle('../processed_dataframes/df_purchases_analytic.pkl')
     

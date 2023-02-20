@@ -31,7 +31,11 @@
       </tr>
     {% endfor %}
   </table>
-  
+  <script>
+    setInterval(function(){
+      window.location.reload(true);
+    }, 600000); // 300000 milliseconds = 10 minutes
+  </script>
 </body>
  
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
