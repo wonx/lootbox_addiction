@@ -76,6 +76,12 @@ def bar_with_plotly():
         'paper_bgcolor': 'rgba(0,0,0,0)',
         'font_color': 'white'
     })
+    
+    # Line width
+    fig1.update_traces(patch={"line": 
+                                  {"width": 1.3}
+                             })
+
 
     # Heatmap
     fig2 = px.imshow(df_top_users, 
