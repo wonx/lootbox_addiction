@@ -45,4 +45,21 @@
   Plotly.plot('chart1', graph1, {});
   Plotly.plot('chart2', graph2, {});
 </script>
+<script>
+    // Get the heatmap element by ID
+    var heatmap = document.getElementById('chart2');
+
+    // Add an onclick event to the heatmap
+    heatmap.on('plotly_click', function(data){
+        // Get the row and column of the clicked cell
+        var row = data.points[0].y;
+        var col = data.points[0].x;
+
+        // Get the username from the column name
+        var username = col.replace('@', '');
+
+        // Redirect to the user's page with the username as a parameter
+        window.location.href = '/user/' + username;
+    });
+</script>
 </html>
