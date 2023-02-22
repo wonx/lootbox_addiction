@@ -29,4 +29,31 @@ Otherwise, follow the [Installation](#installation) instructions below to run Ga
 
 ## Installation
 
-[to do]
+To avoid conflicts with the versions of the dependencies, it is recommended that GameGuard is installed in its separate environment
+
+### Clone the repository
+```
+git clone https://github.com/wonx/lootbox_addiction
+cd lootbox_addiction
+```
+
+### Create a virtual environment for the app
+```
+pip install --user virtualenv
+python3 -m venv .gameguardenv
+source .gameguardenv/bin/activate
+```
+### Install the requirements
+`pip install -r requirements.txt`
+
+### Make sure the `screen` package is installed
+e.g. `apt install screen` for Debian-based systems.
+
+### Finally, launch GameGuard
+`python3 launch.py`
+
+It will create two background *screen* sessions, *lootbox_launcher* and *lootbox_flask* (you can see and enter them by using the `screen -r` parameter). The first one, *lootbox_launcher* is the scheduler for the background scripts that will collect and process the data, and the second one, *lootbox_flask* is the process for the webapp.
+
+You can access the dashboard by browsing to http://localhost:9018
+
+Data will take some time to populate, so not everything will be available in the dashboard immediately. The background ingestion script by default will gather data every 10 minutes, computer the lootbox values every 30 minutes, and compute the risk score for the users on sundays at midnight (Shanghai timezone).
