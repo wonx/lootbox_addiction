@@ -34,25 +34,28 @@ def import_dataframes():
     
     # Determine the last week period
     #enddate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # right now, to string
-    enddate = datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d %H:%M:%S")
+    enddate = datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai'))#.strftime("%Y-%m-%d %H:%M:%S")
+    #enddate -= datetime.timedelta(seconds=1200) # substract the last 20 minutes, we might don't have data yet for that aggregate, so the graph doesn't go to 0 at the end
+    enddate = enddate.strftime("%Y-%m-%d %H:%M:%S")
     startdate = datetime.datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
-    startdate -= datetime.timedelta(seconds=604800) # a day ago
+    startdate -= datetime.timedelta(seconds=604800) # a week ago (604800s)
     startdate = startdate.strftime("%Y-%m-%d %H:%M:%S") # convert back to string
     
     # Importing raw purchases dataset and limiting to one week
     df_purchases = pd.read_pickle("../processed_dataframes/df_purchases.pkl")
-    df_purchases['datetime'] = pd.to_datetime(df_purchases['datetime'])
+    #df_purchases['datetime'] = pd.to_datetime(df_purchases['datetime'])
 
     # Set datetime as index
-    df_purchases.set_index('datetime', inplace=True)
-    # Only keep the period between now and a week ago
-    df_purchases = helpers.get_df_period(df_purchases, startdate, enddate) # this is completely redundant, as it's also in the helpers.py file. Can be optimized.
+    #df_purchases.set_index('datetime', inplace=True)
     
     # Convert df_purchases to Shangai timezone
     df_purchases['datetimeUTC'] = pd.to_datetime(df_purchases['timestamp'], unit='s') # Will be in the UTC timezone by default
     df_purchases['datetime'] = df_purchases['datetimeUTC'].dt.tz_localize("UTC").dt.tz_convert("Asia/Shanghai").dt.tz_localize(None)
-    df_purchases.set_index('datetime', inplace=True)
-   
+    df_purchases.set_index('datetime', inplace=True) # Set datetime as index
+    
+    # Only keep the period between now and a week ago
+    df_purchases = helpers.get_df_period(df_purchases, startdate, enddate) # this is completely redundant, as it's also in the helpers.py file. Can be optimized.
+
 
     # Aggregate and interpolate df_purchases by 5 minutes for the last week
     df_by_second_interpolated = helpers.get_df_bysecond_interpolated(df_purchases, startdate, enddate)
