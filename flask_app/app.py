@@ -128,21 +128,29 @@ def bar_with_plotly():
 # Create User Page Route
 @app.route('/user/<user>')
 def user_page(user):
+    
+    # Force the bar graph to show dates until today
+    today = datetime.date.today()
+    df = df_purchases_dailyaggregate[df_purchases_dailyaggregate['user'] == user]
+    if df['date'].max().date() < today:
+        new_row = pd.DataFrame({'date': [today], 'value': [0]})
+        df = pd.concat([df, new_row], ignore_index=True)
 
     # Generate the plot using the username
     #  purchases per day
-    fig1 = px.bar(df_purchases_dailyaggregate[df_purchases_dailyaggregate['user'] == user], 
+    fig1 = px.bar(df, 
                   x='date', 
                   y='NumberofBets', 
                   title='Lootbox purchases per day', 
-                  color_discrete_sequence=["#ff9900"],                 
+                  color_discrete_sequence=["#ff9900"],
                   labels={
                      "date": "",
                      "NumberofBets": ""})
     fig1.update_layout({
         'plot_bgcolor': 'rgba(0,0,0,0)',
         'paper_bgcolor': 'rgba(0,0,0,0)',
-        'font_color': 'white'
+        'font_color': 'white',
+        'hovermode': "x"
     })
     
     # Risk score evolution
@@ -164,7 +172,8 @@ def user_page(user):
     fig2.update_layout({
         'plot_bgcolor': 'rgba(0,0,0,0)',
         'paper_bgcolor': 'rgba(0,0,0,0)',
-        'font_color': 'white'
+        'font_color': 'white',
+        'hovermode': "x"
     })
 
     # Create graphJSONs
