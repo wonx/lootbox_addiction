@@ -7,7 +7,7 @@
 ## What is it?
 GameGuard is a machine learning solution designed to prevent video game addiction linked to [microtransactions](https://en.wikipedia.org/wiki/Microtransaction). It tracks and mitigates addictive behavior in real-time by monitoring and analyzing user purchase patterns for [loot boxes](https://en.wikipedia.org/wiki/Loot_box), a kind of microtransaction in which the item the player obtain is randomized.
 
-The use of microtransactions, especially in loot boxes, can lead to addictive behavior and excessive spending among players. GameGuard was created to address the problematic aspects of microtransactions that negatively affect the game developer industry and to provide a solution that considers the mental health issues associated with video games.
+The use of microtransactions, especially in loot boxes, can lead to [addictive behavior](https://en.wikipedia.org/wiki/Video_game_addiction) and excessive spending among players. GameGuard was created to address the problematic aspects of microtransactions that negatively affect the game developer industry and to provide a solution that considers the mental health issues associated with video games.
 
 ## How does it work?
 GameGuard uses open data about [loot box purchases](https://www.csgo.com.cn/api/lotteryHistory) for the game Counter Strike in the Chinese market, which includes information on the timestamp, username, and outcome of each purchase. The value for each lootbox and its outcome has been scrapped from an [online market](https://wiki.cs.money/) where people buy and sell these lootboxes.
