@@ -7,6 +7,7 @@ import plotly
 import plotly.express as px
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
+import pytz # For time zones
 import helpers
 
  
@@ -32,7 +33,8 @@ def import_dataframes():
     df_purchases_value =  pd.read_pickle('../processed_dataframes/df_purchases_value.pkl')
     
     # Determine the last week period
-    enddate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # right now, to string
+    #enddate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # right now, to string
+    enddate = datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d %H:%M:%S")
     startdate = datetime.datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
     startdate -= datetime.timedelta(seconds=604800) # a day ago
     startdate = startdate.strftime("%Y-%m-%d %H:%M:%S") # convert back to string
@@ -40,8 +42,17 @@ def import_dataframes():
     # Importing raw purchases dataset and limiting to one week
     df_purchases = pd.read_pickle("../processed_dataframes/df_purchases.pkl")
     df_purchases['datetime'] = pd.to_datetime(df_purchases['datetime'])
+
+    # Set datetime as index
     df_purchases.set_index('datetime', inplace=True)
+    # Only keep the period between now and a week ago
     df_purchases = helpers.get_df_period(df_purchases, startdate, enddate) # this is completely redundant, as it's also in the helpers.py file. Can be optimized.
+    
+    # Convert df_purchases to Shangai timezone
+    df_purchases['datetimeUTC'] = pd.to_datetime(df_purchases['timestamp'], unit='s') # Will be in the UTC timezone by default
+    df_purchases['datetime'] = df_purchases['datetimeUTC'].dt.tz_localize("UTC").dt.tz_convert("Asia/Shanghai").dt.tz_localize(None)
+    df_purchases.set_index('datetime', inplace=True)
+   
 
     # Aggregate and interpolate df_purchases by 5 minutes for the last week
     df_by_second_interpolated = helpers.get_df_bysecond_interpolated(df_purchases, startdate, enddate)
