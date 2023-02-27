@@ -59,4 +59,4 @@ You can access the dashboard by browsing to http://localhost:9018
 Data will take some time to populate, so not everything will be available in the dashboard immediately. The background ingestion script by default will gather data every 10 minutes, computer the lootbox values every 30 minutes, and compute the risk score for the users on sundays at midnight (Shanghai timezone).
 
 If the webapp refuses to start due to the dataframes not being yet ready, you manually start it later on by running: `screen -dmS "lootbox_flask" python3
-flask_app/app.py`.
+flask_app/app.py`
