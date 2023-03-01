@@ -45,6 +45,9 @@ def get_predictions_date(datelimit):
     print("\nProcessing dataframe for data until", date)
     df_purchases_analytic = pd.read_pickle(f"../processed_dataframes/df_purchases_analytic_weekly/{date}_df_purchases_analytic.pkl") 
     print(df_purchases_analytic.shape)
+    
+    # Drop rows with NaN
+    df_purchases_analytic.dropna(subset=['sum_stakes_fixedodds', 'net_loss_fixedodds', 'percent_lost_fixedodds'], inplace=True)
 
     # Drop 'user' column from df_purchases_analytic before applying the model
     X_test = df_purchases_analytic.drop(columns=['user'])
@@ -77,6 +80,11 @@ if __name__ == '__main__':
     print("Loading pickle files...")
     rm_classifier = pickle.load(open('../gambling_dataset/ML_model/randomforestclassifier_gambling.pkl', 'rb')) # The model was trained with scikit-learn==1.0.2 (newer versions might not work)
     df_purchases_analytic = pd.read_pickle('../processed_dataframes/df_purchases_analytic.pkl') 
+    
+    print(df_purchases_analytic)
+    
+    # Drop rows with NaN
+    df_purchases_analytic.dropna(subset=['sum_stakes_fixedodds', 'net_loss_fixedodds', 'percent_lost_fixedodds'], inplace=True)
 
     print("Making predictions...")
     # Drop 'user' column from df_purchases_analytic before applying the model

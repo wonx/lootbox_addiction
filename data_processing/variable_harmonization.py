@@ -131,7 +131,7 @@ if __name__ == '__main__':
     df_purchases_value['out_value'] = df_purchases_value['out_value'].astype(float) # Convert out_value to float
 
     # Remove null rows (we lose ~6.6% of the rows)
-    df_purchases_value.dropna(subset=['src_value', 'out_value'], inplace=True)
+    #df_purchases_value.dropna(subset=['src_value', 'out_value'], inplace=True) # Commented out, this is now done in ML_addiction_predictions.py
 
     print(df_purchases_value.info())
     print(df_purchases_value.shape)
