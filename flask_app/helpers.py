@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import datetime
+import pytz # For time zones
 
 # To convert the 1,0,-1 values of the Improving feature to upward or downward triangles
 def get_arrow(value):
@@ -65,9 +66,14 @@ def get_df_bysecond_interpolated(df_purchases, startdate, enddate):
 
 # Returns a dataframe matrix of the top 50 users with most purchases during the last week
 def get_df_top_users(df_purchases):
-
-    # add timestamp feature
+    
+    print("Getting top users for this week...")
+    
+    # convert timestamp to datetime (utc)
     df_purchases['timestamp'] = pd.to_datetime(df_purchases['timestamp'], unit='s', origin='unix')
+    
+    # Convert to Shanghai timezone
+    df_purchases['timestamp'] = df_purchases['timestamp'].dt.tz_localize("UTC").dt.tz_convert("Asia/Shanghai").dt.tz_localize(None)
 
     # Find the top X users by occurrence
     X = 50
@@ -79,24 +85,25 @@ def get_df_top_users(df_purchases):
 
     # Iterate over the top X users
     for user in top_users:
-      # Select the rows for the current user
-      user_df = df_purchases[df_purchases['user'] == user]
+        
+        # Select the rows for the current user
+        user_df = df_purchases[df_purchases['user'] == user]
 
-      # Group the data by day and count the occurrences
-      grouped_df = user_df.groupby(user_df['timestamp']).size().reset_index(name='count')
+        # Group the data by day and count the occurrences
+        grouped_df = user_df.groupby(user_df['timestamp']).size().reset_index(name='count')
 
-      # Set the timestamp column as the index of the dataframe
-      grouped_df['timestamp'] = pd.to_datetime(grouped_df['timestamp'], infer_datetime_format=True)
-      grouped_df.set_index('timestamp', inplace=True)
+        # Set the timestamp column as the index of the dataframe
+        grouped_df['timestamp'] = pd.to_datetime(grouped_df['timestamp'], infer_datetime_format=True)
+        grouped_df.set_index('timestamp', inplace=True)
 
-      # Create a new dataframe with a row for each date
-      dates_df = grouped_df.resample('D').count()
+        # Create a new dataframe with a row for each date
+        dates_df = grouped_df.resample('D').count()
 
-      # Fill the missing values with zeros
-      dates_df.fillna(0, inplace=True)
+        # Fill the missing values with zeros
+        dates_df.fillna(0, inplace=True)
 
-      # Append the data for the current user to the top_users_df dataframe as a new column
-      df_top_users = pd.concat([df_top_users, dates_df], axis=1)
+        # Append the data for the current user to the top_users_df dataframe as a new column
+        df_top_users = pd.concat([df_top_users, dates_df], axis=1)
 
     # Rename the columns of the df_top_users dataframe using the list of top users
     df_top_users.columns = top_users
