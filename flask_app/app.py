@@ -189,11 +189,17 @@ def user_page(user):
     dict_userpurchases = dict_userpurchases.to_dict("records")
 
     # Stats for that user
-    riskscore = round(df_purchases_analytic_predictions['confidence_score'][df_purchases_analytic_predictions['user'] == user].item()*100, 1)
-    # Round to 3 decimal points
-    for d in dict_userpurchases:
-        d['Turnover'] = round(d['Turnover'], 2)
-        d['Hold'] = round(d['Hold'], 2)
+    try:
+        riskscore = round(df_purchases_analytic_predictions['confidence_score'][df_purchases_analytic_predictions['user'] == user].item()*100, 1)
+        # Round to 3 decimal points
+        for d in dict_userpurchases:
+            d['Turnover'] = round(d['Turnover'], 2)
+            d['Hold'] = round(d['Hold'], 2)
+    except ValueError: # Bug #2: risk score still not computed for that user
+        riskscore = 0
+        pass
+        
+    print("Riskscore:", riskscore)
 
     return render_template('user.html', user=user, graphJSON_user=graphJSON_user, graphJSON_timeday=graphJSON_timeday, userpurchases=dict_userpurchases, riskscore=riskscore)
 
