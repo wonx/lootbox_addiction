@@ -50,7 +50,7 @@ source .gameguardenv/bin/activate
 e.g. `apt install screen` for Debian-based systems.
 
 ### Finally, launch GameGuard
-`python3 launch.py`
+`screen -dmS "lootbox_launcher" python launch.py`
 
 It will create two background *screen* sessions, *lootbox_launcher* and *lootbox_flask* (you can see and enter them by using the `screen -r` parameter). The first one, *lootbox_launcher* is the scheduler for the background scripts that will collect and process the data, and the second one, *lootbox_flask* is the process for the webapp.
 
