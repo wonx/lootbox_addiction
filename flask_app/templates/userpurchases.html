@@ -36,7 +36,12 @@
       <th>Value of the outcome ($)</th>
     </tr>
     {% for purchase in user_date_data %}
-      <tr>
+      {% if purchase.src_value|float != purchase.src_value|float or purchase.out_value|float != purchase.out_value|float %}
+        <tr style="color: red;">
+      {% else %}
+        <tr>
+      {% endif %}
+      
         <td>{{ purchase.datetime_zh }}</td>
         <td>{{ purchase.src_type }}</td>
         <td>{{ purchase.src_en }}</td>
