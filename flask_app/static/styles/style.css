@@ -25,9 +25,28 @@ body {
 }
 
 .stat-box {
-  width: 10%;
+  width: 120px;
+  height: 120px;
+  text-align: center;
   display: inline-block;
   vertical-align: middle;
+  margin: 0 10px;
+}
+
+.stat-box h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.stat-box p {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.stat-box-container {
+  text-align: center;
+  margin: auto;
 }
 
 .plot-wrapper {
