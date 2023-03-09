@@ -15,17 +15,30 @@
       <div id='chart2' class='chart'></div>
     </div>
   </div>
-  <div class="stat-box">
-    <table>
-      <tr>
-        <th>Risk Score</th>
-      </tr>
-      <tr>
-        <td>{{ riskscore }}</td>
-      </tr>
-    </table>
+  <div class="stat-box-container">
+    <div class="stat-box">
+      <h2>First seen</h2>
+      <p>{{ firstpurchase }}</p>
+    </div>
+    <div class="stat-box">
+      <h2>Risk Score</h2>
+      <p>{{ riskscore }}</p>
+    </div>
+    <div class="stat-box">
+      <h2>Total purchases</h2>
+      <p>{{ totalbets }}</p>
+    </div>
+    <div class="stat-box">
+      <h2>Amount spent</h2>
+      <p>${{ totalspent }}</p>
+    </div>
+    <div class="stat-box">
+      <h2>Frequency</h2>
+      <p>{{ betfrequency }}%</p>
+    </div>
   </div>
-  
+
+
 
   <table class="center">
     <tr>

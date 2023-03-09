@@ -193,21 +193,42 @@ def user_page(user):
 
     # Stats for that user
     try:
+        # Last risk score
         riskscore = round(df_purchases_analytic_predictions['confidence_score'][df_purchases_analytic_predictions['user'] == user].item()*100, 1)
         # Round to 3 decimal points
         for d in dict_userpurchases:
             d['Turnover'] = round(d['Turnover'], 2)
             d['Hold'] = round(d['Hold'], 2)
+            
+        # First purchase
+        firstpurchase = df_purchases_dailyaggregate['date'][df_purchases_dailyaggregate['user'] == user].min().strftime('%Y-%m-%d')
+        # Total spent
+        totalspent = df_purchases_dailyaggregate['Turnover'][df_purchases_dailyaggregate['user'] == user].sum()
+        totalspent = round(totalspent,2)
+        
+        # Total bets
+        totalbets = df_purchases_dailyaggregate['NumberofBets'][df_purchases_dailyaggregate['user'] == user].sum()
+        
+        # Bet frequency
+        betfrequency = df_purchases_analytic_predictions['frequency_fixedodds'][df_purchases_analytic_predictions['user'] == user].sum()*100
+        betfrequency = round(betfrequency, 1)
+        
     except ValueError: # Bug #2: risk score still not computed for that user
         riskscore = 0
+        totalspent = 0
+        totalbets = 0
+        betfrequency = 0
+        firstpurchase = "N/A"
         pass
         
     print("Riskscore:", riskscore)
     
+    
+    
     # Get last modification date of df_purchases_dailyaggregate
     last_update = helpers.get_last_modified_date("../processed_dataframes/df_purchases_dailyaggregate.pkl")
 
-    return render_template('user.html', user=user, graphJSON_user=graphJSON_user, graphJSON_timeday=graphJSON_timeday, userpurchases=dict_userpurchases, riskscore=riskscore, last_update=last_update)
+    return render_template('user.html', user=user, graphJSON_user=graphJSON_user, graphJSON_timeday=graphJSON_timeday, userpurchases=dict_userpurchases, riskscore=riskscore, last_update=last_update, firstpurchase=firstpurchase, totalspent=totalspent, totalbets=totalbets, betfrequency=betfrequency)
 
 # User purchases per date, raw data
 @app.route('/user/<user>/<date>')
