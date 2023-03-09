@@ -47,8 +47,8 @@ scheduler = BlockingScheduler(timezone=str(tzlocal.get_localzone()))
 scheduler.add_job(run_data_ingestion, 'interval', minutes=2, id='data_ingestion', replace_existing=True, max_instances=1)
 scheduler.add_job(run_generate_df_purchases, 'interval', minutes=10, id='generate_df_purchases', replace_existing=True, max_instances=1, jitter=60)
 scheduler.add_job(run_generate_df_purchases_value, 'interval', minutes=30, id='generate_df_purchases_value', replace_existing=True, max_instances=1, jitter=120)
-scheduler.add_job(run_variable_harmonization, 'cron', day_of_week='*', hour=0, minute=2, id='variable_harmonization', replace_existing=True, max_instances=1, jitter=120)
-scheduler.add_job(run_ML_addiction_predictions, 'cron', day_of_week='mon', hour=0, minute=15, id='ML_addiction_predictions', replace_existing=True, max_instances=1, jitter=120)
+scheduler.add_job(run_variable_harmonization, 'cron', day_of_week='*', hour=16, minute=2, id='variable_harmonization', replace_existing=True, max_instances=1, jitter=120)
+scheduler.add_job(run_ML_addiction_predictions, 'cron', day_of_week='mon', hour=16, minute=15, id='ML_addiction_predictions', replace_existing=True, max_instances=1, jitter=120)
 
 # Start the flask app as background process
 print("Starting flask app...")
