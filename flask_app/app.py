@@ -16,6 +16,10 @@ app = Flask(__name__)
 
 def import_dataframes():
     # Import pickle dataframes
+    global totalpurchases
+    global uniqueusers
+    global onepercent
+    global df_purchases
     global df_purchases_analytic_predictions
     global df_purchases_dailyaggregate
     global df_purchases_daily
@@ -43,6 +47,12 @@ def import_dataframes():
     
     # Importing raw purchases dataset and limiting to one week
     df_purchases = pd.read_pickle("../processed_dataframes/df_purchases.pkl")
+    totalpurchases = df_purchases.shape[0] # for the statbox
+    uniqueusers = df_purchases['user'].nunique()
+    
+    df_purchases_grouped = df_purchases.groupby('user').count() # for the onepercent top users
+    n_users = int(len(df_purchases_grouped) * 0.01)
+    onepercent = round(df_purchases_grouped['timestamp'].nlargest(n_users).mean(), 1)
     #df_purchases['datetime'] = pd.to_datetime(df_purchases['datetime'])
 
     # Set datetime as index
@@ -127,9 +137,19 @@ def bar_with_plotly():
     # Get last modification date of df_purchases
     last_update = helpers.get_last_modified_date("../processed_dataframes/df_purchases.pkl")
     
+    # Stat boxes
+    #totalpurchases = 0
+    #uniqueusers = 0
+    purchasesperuser = round(totalpurchases / uniqueusers,1)
+    purchasesweek = df_purchases.shape[0]
+    usersatrisk = df_purchases_analytic_predictions[df_purchases_analytic_predictions['addiction'] == 1].shape[0]
+    daysofdata = df_purchases_dailyaggregate.groupby('date').count().shape[0]
+    
+    #onepercent = 0
+    
 
     # Use render_template to pass graphJSON to html
-    return render_template('bar.html', graphJSON1=graphJSON1, graphJSON2=graphJSON2, users=dict_userpredictions, last_update=last_update)
+    return render_template('bar.html', graphJSON1=graphJSON1, graphJSON2=graphJSON2, users=dict_userpredictions, last_update=last_update, totalpurchases=totalpurchases, purchasesperuser=purchasesperuser, purchasesweek=purchasesweek, uniqueusers=uniqueusers, usersatrisk=usersatrisk, daysofdata=daysofdata, onepercent=onepercent)
  
 # Create User Page Route
 @app.route('/user/<user>')

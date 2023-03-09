@@ -4,41 +4,77 @@
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}" >
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static',filename='favicon.png') }}">
   </head>
- <body>
-  <div class="logo">
-    <img src="{{url_for('static', filename='gameguard_logo.png')}}" height="200"/>
-  </div>
-  <div class="last-modified">Last Update: {{ last_update }} UTC</div>
-  <div class="plot-wrapper">
-    <div class="graph-container">
-      <div id='chart1' class='chart'></div>
+  <body>
+    <div class="last-modified">Last Update: {{ last_update }} UTC</div>
+
+    <div class="header-container">
+      <div class="logo">
+        <img src="{{url_for('static', filename='gameguard_logo.png')}}" height="200"/>
+      </div>
+
+      <div class="stat-box-container_frontpage">
+        <div class="stat-box">
+          <h2>Days of data</h2>
+          <p>{{ daysofdata }}</p>
+        </div>
+        <div class="stat-box">
+          <h2>Total purchases</h2>
+          <p>{{ totalpurchases }}</p>
+        </div>
+        <div class="stat-box">
+          <h2>Last week</h2>
+          <p>{{ purchasesweek }}</p>
+        </div>
+        <div class="stat-box">
+          <h2>Unique users</h2>
+          <p>{{ uniqueusers }}</p>
+        </div>
+        <div class="stat-box">
+          <h2>Per user avg</h2>
+          <p>{{ purchasesperuser }}</p>
+        </div>
+        <div class="stat-box">
+          <h2>Top 1% avg</h2>
+          <p>{{ onepercent }}</p>
+        </div>
+        <div class="stat-box">
+          <h2>Users at risk</h2>
+          <p>{{ usersatrisk }}</p>
+        </div>
+      </div>
     </div>
-    <div class="graph-container">
-      <div id='chart2' class='chart'></div>
+
+    <div class="plot-wrapper">
+      <div class="graph-container">
+        <div id='chart1' class='chart'></div>
+      </div>
+      <div class="graph-container">
+        <div id='chart2' class='chart'></div>
+      </div>
     </div>
-  </div>
-  <table class="center">
-    <tr>
-      <th>User</th>
-      <th>Risk score</th>
-      <th>Tendency</th>
-      <th></th>
-    </tr>
-    {% for user in users %}
+
+    <table class="center">
       <tr>
-        <td>{{ user.user }}</a></td>
-        <td>{{ user.confidence_score }}</td>
-        <td><span style="color: {% if user.improving == '▲' %}red{% elif user.improving == '▼' %}green{% endif %};">{{ user.improving }}</span></td>
-        <td><a href="{{ url_for('user_page', user=user.user) }}">Details</a></td>
+        <th>User</th>
+        <th>Risk score</th>
+        <th>Tendency</th>
+        <th></th>
       </tr>
-    {% endfor %}
-  </table>
-  <script>
-    setInterval(function(){
-      window.location.reload(true);
-    }, 600000); // 300000 milliseconds = 10 minutes
-  </script>
-</body>
+      {% for user in users %}
+        <tr>
+          <td>{{ user.user }}</a></td>
+          <td>{{ user.confidence_score }}</td>
+          <td><span style="color: {% if user.improving == '▲' %}red{% elif user.improving == '▼' %}green{% endif %};">{{ user.improving }}</span></td>
+          <td><a href="{{ url_for('user_page', user=user.user) }}">Details</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+    <script>
+      setInterval(function(){
+        window.location.reload(true);
+      }, 600000); // 300000 milliseconds = 10 minutes
+    </script>
+  </body>
  
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 <script type='text/javascript'>
