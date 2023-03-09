@@ -2,6 +2,14 @@ import pandas as pd
 import numpy as np
 import datetime
 import pytz # For time zones
+import os
+from datetime import datetime
+
+
+# To check the last modification date of a file
+def get_last_modified_date(file_path):
+    modified_time = os.path.getmtime(file_path)
+    return datetime.fromtimestamp(modified_time).strftime("%Y-%m-%d %H:%M:%S")
 
 # To convert the 1,0,-1 values of the Improving feature to upward or downward triangles
 def get_arrow(value):

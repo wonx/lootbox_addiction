@@ -123,10 +123,13 @@ def bar_with_plotly():
     # Round to 3 decimal points
     for d in dict_userpredictions:
         d['confidence_score'] = round(d['confidence_score']*100, 1)
+        
+    # Get last modification date of df_purchases
+    last_update = helpers.get_last_modified_date("../processed_dataframes/df_purchases.pkl")
     
 
     # Use render_template to pass graphJSON to html
-    return render_template('bar.html', graphJSON1=graphJSON1, graphJSON2=graphJSON2, users=dict_userpredictions)
+    return render_template('bar.html', graphJSON1=graphJSON1, graphJSON2=graphJSON2, users=dict_userpredictions, last_update=last_update)
  
 # Create User Page Route
 @app.route('/user/<user>')
@@ -200,8 +203,11 @@ def user_page(user):
         pass
         
     print("Riskscore:", riskscore)
+    
+    # Get last modification date of df_purchases_dailyaggregate
+    last_update = helpers.get_last_modified_date("../processed_dataframes/df_purchases_dailyaggregate.pkl")
 
-    return render_template('user.html', user=user, graphJSON_user=graphJSON_user, graphJSON_timeday=graphJSON_timeday, userpurchases=dict_userpurchases, riskscore=riskscore)
+    return render_template('user.html', user=user, graphJSON_user=graphJSON_user, graphJSON_timeday=graphJSON_timeday, userpurchases=dict_userpurchases, riskscore=riskscore, last_update=last_update)
 
 # User purchases per date, raw data
 @app.route('/user/<user>/<date>')
@@ -209,8 +215,11 @@ def user_date(user, date):
 
     # Filter the data for the specific user and date
     user_date_data = df_purchases_value[(df_purchases_value['datetime_zh'].dt.floor('d') == date) & (df_purchases_value['user']  == user)].to_dict("records")
+    
+    # Get last modification date of df_purchases_value
+    last_update = helpers.get_last_modified_date("../processed_dataframes/df_purchases_value.pkl")
 
-    return render_template('userpurchases.html', user=user, date=date, user_date_data=user_date_data)
+    return render_template('userpurchases.html', user=user, date=date, user_date_data=user_date_data, last_update=last_update)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=9018, debug=True)
