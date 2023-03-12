@@ -86,7 +86,7 @@ table.center {
 table {
   width: 80%;
   text-align: center;
-  font-size: 130%
+  font-size: 0.9vw;
 }
 
 table tr {
