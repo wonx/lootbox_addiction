@@ -48,12 +48,12 @@ body {
 }
 
 .stat-box h2 {
-  font-size: 16px;
+  font-size: 0.8vw;
   margin-bottom: 10px;
 }
 
 .stat-box p {
-  font-size: 22px;
+  font-size: 1.2vw;
   font-weight: 600;
   margin: 0;
   flex: 1;
@@ -70,7 +70,7 @@ body {
 .stat-box-container_frontpage {
   text-align: center;
   margin: auto;
-  width: 70%;
+  width: 78%;
 }
 
 
