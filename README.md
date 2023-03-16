@@ -18,7 +18,7 @@ The solution is accessible through an online dashboard, which provides an overvi
 
 ### No, but how does it really work?
 
-Alright, let's see [GameGuard under the hood](underthehood.md).
+Alright, let's see [GameGuard under the hood](docs/underthehood.md).
 
 ## I want to try it!
 For an online demo, just head to http://gameguard.marcpalaus.com
