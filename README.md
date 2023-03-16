@@ -16,6 +16,10 @@ It also uses a [labeled dataset on online gambling](http://www.thetransparencypr
 
 The solution is accessible through an online dashboard, which provides an overview of the lootbox purchase patterns and shows the users with the higher risk score. On each user's profile page, the evolution of the risk score through time is shown, together with daily statistics of their purchase history, with the possibility of inspecting the raw data. All those features are designed to allow regulatory agencies to take necessary actions to prevent addiction.
 
+### No, but how does it really work?
+
+Alright, let's see [GameGuard under the hood](underthehood.md).
+
 ## I want to try it!
 For an online demo, just head to http://gameguard.marcpalaus.com
 
