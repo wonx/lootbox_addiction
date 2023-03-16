@@ -74,12 +74,19 @@ ML model training:
         processed_dataframes/df_purchases_analytic_weekly/yyyy-mm-dd-df_purchases_analytic.pkl
 
 ## Machine Learning model training
-Random Forest Classifier
+`gambling_dataset/ML_model/training_ML_model.ipynb`
+
+    input:
+        gambling_dataset/AnalyticDataset_Gray_LaPlante_PAB_2012.dat
+    output:
+        gambling_dataset/ML_model/randomforestclassifier_gambling.pkl
+
 
 ## ML Predictions
 `ML_addiction_predictions.py`
 
     input:
+        gambling_dataset/ML_model/randomforestclassifier_gambling.pkl
         processed_dataframes/df_purchases_analytic.pkl
         processed_dataframes/df_purchases_analytic_weekly/yyyy-mm-dd-df_purchases_analytic.pkl
     output:
