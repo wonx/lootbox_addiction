@@ -1,7 +1,9 @@
 # GameGuard under the hood
 
+## Workflow diagram
 ![](https://github.com/wonx/lootbox_addiction/blob/main/docs/workflow.png?raw=true)
 
+## File dependency diagram
 ![](https://github.com/wonx/lootbox_addiction/blob/main/docs/gameguard_file_relationship.png?raw=true)
 
 ## Data ingestion
