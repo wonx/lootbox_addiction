@@ -125,6 +125,7 @@ ML model training:
 `launch.py`
 
 Schedule:
+- `screen -dmS 'lootbox_flask' python3 app.py` at startup
 - `getlootboxjson.py` every 2 minutes
 - `generate_df_purchases.py` every 10 minutes
 - `generate_df_purchases_value.py` every 30 minutes
