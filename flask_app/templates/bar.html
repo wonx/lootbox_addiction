@@ -5,6 +5,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static',filename='favicon.png') }}">
   </head>
   <body>
+    {% if lockfile_exists %}
+      <p class="error">Lockfile is present</p>
+    {% endif %}
     <div class="last-modified">Last Update: {{ last_update }} UTC</div>
 
     <div class="header-container">

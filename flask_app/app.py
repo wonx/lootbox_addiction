@@ -9,6 +9,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 import pytz # For time zones
 import helpers
+import os
 
  
 # Create Home Page Route
@@ -137,6 +138,11 @@ def bar_with_plotly():
     # Get last modification date of df_purchases
     last_update = helpers.get_last_modified_date("../processed_dataframes/df_purchases.pkl")
     
+    # Check if lockfile is present
+    lockfile_path = "../processed_dataframes/df_purchases_value.lock"
+    lockfile_exists = os.path.isfile(lockfile_path)
+    print("lockfile: ", lockfile_exists)
+    
     # Stat boxes
     #totalpurchases = 0
     #uniqueusers = 0
@@ -149,7 +155,7 @@ def bar_with_plotly():
     
 
     # Use render_template to pass graphJSON to html
-    return render_template('bar.html', graphJSON1=graphJSON1, graphJSON2=graphJSON2, users=dict_userpredictions, last_update=last_update, totalpurchases=totalpurchases, purchasesperuser=purchasesperuser, purchasesweek=purchasesweek, uniqueusers=uniqueusers, usersatrisk=usersatrisk, daysofdata=daysofdata, onepercent=onepercent)
+    return render_template('bar.html', graphJSON1=graphJSON1, graphJSON2=graphJSON2, users=dict_userpredictions, last_update=last_update, lockfile_exists=lockfile_exists, totalpurchases=totalpurchases, purchasesperuser=purchasesperuser, purchasesweek=purchasesweek, uniqueusers=uniqueusers, usersatrisk=usersatrisk, daysofdata=daysofdata, onepercent=onepercent)
  
 # Create User Page Route
 @app.route('/user/<user>')
