@@ -66,7 +66,7 @@ def get_df_bysecond_interpolated(df_purchases, startdate, enddate):
     df_by_second.replace(0, np.nan, inplace=True) # 0 to NaN
     
     # Apply interpolate_rolling_limit()
-    df_by_second_interpolated_limit = interpolate_limit(df_by_second, 60, 1500)
+    df_by_second_interpolated_limit = interpolate_limit(df_by_second, 60, 3700)
     print(df_by_second_interpolated_limit.shape)
     
     return df_by_second_interpolated_limit
