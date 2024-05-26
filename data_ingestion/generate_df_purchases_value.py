@@ -304,11 +304,11 @@ if __name__ == '__main__':
         process_new_rows()
         
         # Remove lockfile
-        print("Removing lockfile..."
+        print("Removing lockfile...")
         try:
             os.remove(lockfile_path)
         except OSError as e: # name the Exception `e`
-            print "Failed with:", e.strerror # look what it says
-            print "Error code:", e.code 
+            print("Failed with:"), e.strerror # look what it says
+            print("Error code:"), e.code 
         
         print("All done!")
