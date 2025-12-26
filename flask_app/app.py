@@ -44,24 +44,24 @@ def import_dataframes():
     
     print(f"Loading data from {cutoff_date_str} onwards (last 45 days)")
     
-    # Importing raw purchases dataset
-    df_purchases = pd.read_pickle("../processed_dataframes/df_purchases.pkl")
+    # Importing raw purchases dataset (FULL HISTORY for statistics)
+    df_purchases_full = pd.read_pickle("../processed_dataframes/df_purchases.pkl")
     
-    # Convert df_purchases to Shanghai timezone and filter to last 45 days
-    df_purchases['datetimeUTC'] = pd.to_datetime(df_purchases['timestamp'], unit='s')
-    df_purchases['datetime'] = df_purchases['datetimeUTC'].dt.tz_localize("UTC").dt.tz_convert("Asia/Shanghai").dt.tz_localize(None)
-    df_purchases.set_index('datetime', inplace=True)
+    # Convert to Shanghai timezone
+    df_purchases_full['datetimeUTC'] = pd.to_datetime(df_purchases_full['timestamp'], unit='s')
+    df_purchases_full['datetime'] = df_purchases_full['datetimeUTC'].dt.tz_localize("UTC").dt.tz_convert("Asia/Shanghai").dt.tz_localize(None)
+    df_purchases_full.set_index('datetime', inplace=True)
     
-    # Filter to last 45 days
-    df_purchases = df_purchases[df_purchases.index.date >= cutoff_date.date()]
+    # Calculate statistics on FULL HISTORICAL DATA (all-time stats for homepage)
+    totalpurchases = df_purchases_full.shape[0]
+    uniqueusers = df_purchases_full['user'].nunique()
     
-    # Calculate statistics on the filtered data
-    totalpurchases = df_purchases.shape[0]
-    uniqueusers = df_purchases['user'].nunique()
-    
-    df_purchases_grouped = df_purchases.groupby('user').count()
+    df_purchases_grouped = df_purchases_full.groupby('user').count()
     n_users = int(len(df_purchases_grouped) * 0.01)
     onepercent = round(df_purchases_grouped['timestamp'].nlargest(n_users).mean(), 1) if n_users > 0 else 0
+    
+    # Now filter to last 45 days for memory optimization (for graphs/display)
+    df_purchases = df_purchases_full[df_purchases_full.index.date >= cutoff_date.date()]
     
     # Only keep the period between now and a week ago for display purposes
     df_purchases_week = helpers.get_df_period(df_purchases, startdate, enddate)
