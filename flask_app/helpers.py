@@ -77,6 +77,9 @@ def get_df_top_users(df_purchases):
     
     print("Getting top users for this week...")
     
+    # Make a copy to avoid SettingWithCopyWarning
+    df_purchases = df_purchases.copy()
+    
     # convert timestamp to datetime (utc)
     df_purchases['timestamp'] = pd.to_datetime(df_purchases['timestamp'], unit='s', origin='unix')
     
