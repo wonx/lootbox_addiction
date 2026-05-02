@@ -1,0 +1,16 @@
+# Ignore raw data files
+data_ingestion/csv/*.csv
+
+# Ignore processed pickles and databases
+processed_dataframes/*.pkl
+processed_dataframes/*.lock
+flask_app/df_pickles/
+
+# Ignore Jupyter and Python system files
+.ipynb_checkpoints/
+__pycache__/
+*.bak
+flask_app/output.log
+*~
+processed_dataframes/df_purchases_analytic_weekly/
+Zendle et al. 2020/*.csv
