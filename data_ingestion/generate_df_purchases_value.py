@@ -5,12 +5,15 @@ import time # For timing executions
 import pytz # For managing time zones
 import json # Reading / Saving dicts to json
 from tqdm import tqdm # To show progress bar when applying lambda function
-
+import argparse # For command-line arguments
 
 # Extract just the new rows in the df_purchases not yet present in df_purchases_value
 def get_new_rows(df_purchases, df_purchases_value):
-    merged_df = pd.merge(df_purchases, df_purchases_value, on=['timestamp', 'user'], how='inner')
-    unique_df = df_purchases[~df_purchases[['timestamp', 'user']].apply(tuple, axis=1).isin(merged_df[['timestamp', 'user']].apply(tuple, axis=1))]
+    if df_purchases_value.empty: # If df_purchases_value is empty, all rows in df_purchases are "new"
+        return df_purchases
+    
+    merged_df = pd.merge(df_purchases, df_purchases_value, on=['timestamp', 'user'], how='inner', suffixes=('', '_old'))
+    unique_df = df_purchases[~df_purchases.set_index(['timestamp', 'user']).index.isin(merged_df.set_index(['timestamp', 'user']).index)]
     return unique_df
 
 
@@ -34,7 +37,7 @@ def parse_new_values(new_rows):
     
     # Let's separate whatever is within parenthesis as new features
     #the u prefix is to specify that the string is a Unicode string. e.g. 截短霰弹枪（纪念品） 
-    new_rows['out_1_par'] = new_rows['out_1'].str.strip().str.extract(u'（(.*?)）')
+    new_rows['out_1_par'] = new_rows['out_1'].str.strip().str.extract(r'（(.*?)）')
     new_rows['out_2_par'] = new_rows['out_2'].str.strip().str.extract(r'（([^（）]*)）$')
     
     # Also, let's put the part with no parentheses in another column
@@ -66,13 +69,11 @@ def get_src_info(new_rows, df_src):
     # Load dictionary for manually correcting some missing values
     with open('../lootbox_db_scraping/lootboxes_zh_en.json', 'r', encoding='utf-8') as file:
         lootboxes_zh_en = json.load(file)
-    # Generate dict, but opposite direction (English->Chinese)
-    lootboxes_en_zh = {v: k for k, v in lootboxes_zh_en.items()}
     
     # Now map the values of df_src into the df_purchases (merge both dataframes)
     merged_df = new_rows.merge(df_src, left_on='src', right_on='lootbox_zh', how='left')
     new_rows["src_en"] = merged_df["lootbox_en"] # this is not being applied for some reason 
-    new_rows['src_en'] = new_rows['src'].map(lootboxes_zh_en).fillna(new_rows['src_en']) # Manually fill missing values from the dict. is this still necessary?
+    new_rows['src_en'] = new_rows['src'].map(lootboxes_zh_en).fillna(new_rows['src_en'])
     
     
     # Add the type of lootbox into df_purchases
@@ -96,7 +97,7 @@ def get_src_info(new_rows, df_src):
 
     # Convert values like $ 1.21 to 1.21 (float) and convert whole column to float
     new_rows['src_value'] = new_rows['src_value'].apply(lambda x: x.strip('$') if isinstance(x, str) and "$" in x else x)
-    new_rows['src_value']= pd.to_numeric(new_rows['src_value'])
+    new_rows['src_value']= pd.to_numeric(new_rows['src_value'], errors='coerce') # Added errors='coerce' for robustness
     
     # Rearrange column in df_purchases so src_en goes after src
     new_rows = new_rows[['datetime_zh', 'timestamp', 'user', 'src', 'src_en', 'src_type', 'src_value', 'out', 'out_1_nopar',
@@ -109,206 +110,212 @@ def get_src_info(new_rows, df_src):
 
 
 # This functions returns the type and value of `out` for the df_purchases, by checking the df_out dataframe
-# (this function should be rewriten so it can use column names instead of indices...)
-def get_value(purchase, verbose=False):
+def get_value(purchase, df_out_local, verbose=False):
     outcategory = ''
     stripped = [s.strip() for s in purchase[8:]]
     purchase = purchase[:8] + stripped
     if verbose: print("Purchase: ", purchase)
 
     # Some specific cases to deal with manually
-    if purchase[8] == 'CZ75': purchase[8] = 'CZ75 自动手枪' # The pistol CZ75 appears as CZ75 自动手枪 in df_out. It's an exception that needs to be corrected manually.
-    if purchase[8] == 'M4A1 消音型': purchase[8] = 'M4A1 消音版' # The weapon M4A1 消音型 appears as M4A1 消音版 in df_out.
+    if purchase[8] == 'CZ75': purchase[8] = 'CZ75 自动手枪' 
+    if purchase[8] == 'M4A1 消音型': purchase[8] = 'M4A1 消音版' 
+
+    value_item = np.nan # Initialize as NaN (float)
 
     if purchase[8] == '印花': # If it's a sticker
-        # It still fails if a sticker, patch and graffiti have the same name (finds more than 1 result, like item 580721), we have to control those cases
         if verbose: print("It's a sticker")
         outcategory = "Regular Stickers"
         if verbose: print(f"Name of sticker {purchase[10]}")
         if verbose: print(f"Grade of the sticker: {purchase[11]}")
-        #if purchase[10] == "冠军": # Champion
-        #    print("Champion!")
         if purchase[13] != "": # If there's something in out3, it's a tournament sticker
             outcategory = "Tournament Sticker"
             if verbose: print("It's a tournament sticker")
             if verbose: print(f"It belongs to the tournament {purchase[13]}")
-            df_query = df_out.query("Weapon_zh == @purchase[10] & Skin_Name_zh == @purchase[13]")
+            df_query = df_out_local.query("Weapon_zh == @purchase[10] & Skin_Name_zh == @purchase[13]")
         else:
             if verbose: print("It's a non-tournament sticker")
-            df_query = df_out.query("Type_zh == '普通贴纸' & Weapon_zh == @purchase[10] & Skin_Name_zh == @purchase[13]") # to separate them from graffiti and patches
+            df_query = df_out_local.query("Type_zh == '普通贴纸' & Weapon_zh == @purchase[10] & Skin_Name_zh == @purchase[13]")
 
-        value =  df_query['Value']
-        if verbose: print(df_query)
-    
+        value_from_query =  df_query['Value']
+        if not value_from_query.empty:
+            value_item = value_from_query.iloc[0]
 
     elif purchase[8] == '音乐盒':
         if verbose: print("It's a music kit")
-        df_query = df_out.query("Type_en == 'Music Kits' & Weapon_zh == @purchase[8]")
+        df_query = df_out_local.query("Type_en == 'Music Kits' & Weapon_zh == @purchase[8]")
         outcategory = "Music Kits"
-        value =  df_query['Value']
+        value_from_query =  df_query['Value']
+        if not value_from_query.empty:
+            value_item = value_from_query.iloc[0]
 
     elif '★' in purchase[9]:
         if verbose: print("Item with a star! ★")
         searchitem = purchase[8]+'（'+purchase[9]+'）'
         if verbose: print(searchitem)
-        df_query = df_out.query("Weapon_zh == @searchitem & Skin_Name_zh == @purchase[10]")
-        value =  df_query['Value']
-        #print(df_query)
+        df_query = df_out_local.query("Weapon_zh == @searchitem & Skin_Name_zh == @purchase[10]")
+        value_from_query =  df_query['Value']
+        if not value_from_query.empty:
+            value_item = value_from_query.iloc[0]
 
     else:
-        if verbose: print("It's likely a weapon skin") # Still fails for music boxes
-        #df_weaponsearch = df_out[df_out['Weapon_zh'] == purchase[6]]
-        
-        df_query = df_out.query("Skin_Name_zh == @purchase[10] & Weapon_zh == @purchase[8] ") # Control if 0 cases are returned, like item with timestamp 1673442333
+        if verbose: print("It's likely a weapon skin") 
+        df_query = df_out_local.query("Skin_Name_zh == @purchase[10] & Weapon_zh == @purchase[8] ")
         outcategory = "Unknown Weapon skin"
+        value_from_query = pd.Series() # Initialize as empty Series
+
         if purchase[9] == '纪念品':
             if verbose: print("It's a Souvenir weapon.")
-            value =  df_query['Value_Souvenir']
+            value_from_query =  df_query['Value_Souvenir']
         elif purchase[9] == 'StatTrak™':
             if verbose: print("It's a StatTrak weapon.")
-            value =  df_query['Value_Stattrak']
+            value_from_query =  df_query['Value_Stattrak']
         elif purchase[9] == '':
             if verbose: print("The weapon has the grade Normal.")
-            value =  df_query['Value']
+            value_from_query =  df_query['Value']
 
+        if not value_from_query.empty:
+            value_item = value_from_query.iloc[0]
         else:
             if verbose: print("What is this?") # if anything else fails
-            return 'not found', np.nan
-        if verbose: print(df_query)
+            return 'not found', np.nan # Ensure np.nan is returned here
 
     # Parse value (will be in '$ 34 - $ 56' format)
-    if verbose: print("value: ", value)
-    
-    if len(value.index) == 0: # If no results were found, set the value as np.nan
-        if verbose: print("No results found")
-        if outcategory == "":
-            return 'unknown', np.nan 
-        else:
-            return outcategory, np.nan # sometimes we know the type, even if it was not found
-    elif len(value.index) > 1: 
-        value = value.head(1) # If more than 1 value is returned, keep the first one. Some rows are repeated in df_out, it's fine
-        
-    value = value.item()
+    if not pd.isna(value_item): # Only process if it's not already NaN
+        if '-' in str(value_item): value_item = str(value_item).split(' - ')[0] 
+        value_item = str(value_item).replace('$', '').strip() 
+        try:
+            value_item = float(value_item) # Crucially convert to float
+        except ValueError:
+            value_item = np.nan # If conversion fails, it's NaN
 
-    if '-' in value: value = value.split(' - ')[0] # If it's a range, get the first value (the lowest)
-    if verbose: print("value: ", value)
-    value = value.replace('$', '').strip() # remove the $ sign
-    if verbose: print("value without $: ", value)
-    return df_query.iloc[0]['Type_en'], value # Returns a 2-element tuple with the type of out and its value
+    final_out_type = df_query.iloc[0]['Type_en'] if not df_query.empty and 'Type_en' in df_query.columns else outcategory
+    return final_out_type, value_item # Always return a float or np.nan for value_item
 
 
+def get_out_info(new_rows, df_out_global):
+    tqdm.pandas()
+    df_purchases_value_temp = new_rows.copy()
+    df_purchases_value_temp[['out_type', 'out_value']] = df_purchases_value_temp.progress_apply(lambda row: pd.Series(get_value(list(row), df_out_global, verbose=False)), axis=1)
+    return df_purchases_value_temp
 
-def get_out_info(new_rows):
-    
-    tqdm.pandas() # to show a progress bar. Might make it a bit slower.
-    
-    #df_purchases_value = df_purchases.iloc[-1000:] # for processing just a slice
-    df_purchases_value = new_rows.copy()
-    df_purchases_value[['out_type', 'out_value']] = df_purchases_value.progress_apply(lambda row: pd.Series(get_value(list(row), verbose=False)), axis=1)
-    #df_purchases_value[['out_type', 'out_value']] = df_purchases_value.apply(lambda row: pd.Series(get_value(list(row), verbose=False)), axis=1) # Non-progress bar option
-    
-    return df_purchases_value
-
-def process_new_rows():
+def process_new_rows(initial_rows_limit=None):
     
     print("Importing dataframes...")
-    df_purchases = pd.read_pickle('../processed_dataframes/df_purchases.pkl')
-    df_purchases_value = pd.read_pickle('../processed_dataframes/df_purchases_value.pkl')
-    global df_src
-    global df_out
-    df_src = pd.read_pickle('../lootbox_db_scraping/df_pickles/df_src.pkl')
-    df_out = pd.read_pickle('../lootbox_db_scraping/df_pickles/df_out.pkl')
+    df_purchases_path = '../processed_dataframes/df_purchases.parquet'
+    df_purchases_value_path = '../processed_dataframes/df_purchases_value.parquet'
+    df_src_path = '../lootbox_db_scraping/df_pickles/df_src.parquet'
+    df_out_path = '../lootbox_db_scraping/df_pickles/df_out.parquet'
 
-    print(df_purchases.info())
-    print(df_purchases_value.info())
+    df_purchases = pd.read_parquet(df_purchases_path)
+    
+    is_initial_run = False
+    if os.path.exists(df_purchases_value_path):
+        df_purchases_value = pd.read_parquet(df_purchases_value_path)
+        print("df_purchases_value.parquet loaded for appending.")
+    else:
+        # Define the expected columns for df_purchases_value
+        expected_columns = ['datetime_zh', 'timestamp', 'user', 'src', 'src_en', 'src_type', 'src_value', 
+                            'out', 'out_1_nopar', 'out_1_par', 'out_2_nopar', 'out_2_par_1', 'out_2_par_2', 'out_3',
+                            'out_type', 'out_value']
+        df_purchases_value = pd.DataFrame(columns=expected_columns).astype({'out_value': float, 'src_value': float}) # Explicitly set numeric types for new empty DF
+        print("df_purchases_value.parquet does not exist, initializing empty DataFrame.")
+        is_initial_run = True
 
+    if is_initial_run and initial_rows_limit is not None and initial_rows_limit > 0:
+        print(f"Limiting initial processing to the last {initial_rows_limit} rows of df_purchases for testing.")
+        df_purchases = df_purchases.tail(initial_rows_limit)
 
-    print("\nExtracting new rows from df_purchases")
+    df_src = pd.read_parquet(df_src_path)
+    df_out = pd.read_parquet(df_out_path)
+    
+    print(f"\nExisting df_purchases_value shape: {df_purchases_value.shape}")
+    print("Extracting new rows from df_purchases")
     st = time.time()
     df_purchases_new = get_new_rows(df_purchases, df_purchases_value)
-    print(df_purchases_new.shape)
+    print(f"New rows to process: {df_purchases_new.shape}")
     et = time.time()
     print('  execution time:', et - st, 'seconds')
     
-    print("\nParsing new rows")
-    if len(df_purchases_new) != 0:
-        st = time.time()
-        print(df_purchases_new.head(5))
-        df_purchases_new = parse_new_values(df_purchases_new)
-        print(df_purchases_new.head(5))
-        et = time.time()
-        print('  execution time:', et - st, 'seconds')
-    else:
-        # Nothing to do, remove lock and quit
+    if df_purchases_new.empty:
         print("No new lines to process, exiting.")
-        return
+        return 
+
+    print("\nParsing new rows")
+    st = time.time()
+    df_purchases_new = parse_new_values(df_purchases_new)
+    et = time.time()
+    print('  execution time:', et - st, 'seconds')
 
     print("\nFilling new rows with data from df_src (src_en, src_type and src_value)")
     st = time.time()
     df_purchases_new = get_src_info(df_purchases_new, df_src)
-    #print(df_purchases_new.sample(2))
     et = time.time()
     print('  execution time:', et - st, 'seconds')
     
     print("\nFilling new rows with data from df_out")
-    print(df_purchases_new.info())
     st = time.time()
-    df_purchases_new = get_out_info(df_purchases_new)
+    df_purchases_new = get_out_info(df_purchases_new, df_out)
     et = time.time()
-    #print(df_purchases_new.sample(3))
     print('  execution time:', et - st, 'seconds')
 
     # Manually insert prices to 'out_value' based on 'out' from dictionary
     print("\nAdding missing prices manually from dict")
-    with open('../lootbox_db_scraping/manual_prices.json', 'r', encoding='utf-8') as file:
+    manual_prices_path = '../lootbox_db_scraping/manual_prices.json'
+    with open(manual_prices_path, 'r', encoding='utf-8') as file:
             manual_prices = json.load(file)
+            # Ensure manual prices are floats
+            manual_prices = {k: float(v) if isinstance(v, (int, float, str)) and str(v).replace('.', '', 1).isdigit() else np.nan for k, v in manual_prices.items()}
+
     df_purchases_new['out_value'] = df_purchases_new['out'].map(manual_prices).fillna(df_purchases_new['out_value'])
-    df_purchases_value['out_value'] = df_purchases_value['out'].map(manual_prices).fillna(df_purchases_value['out_value'])
     
-    # Check how many prices are missing in the new (and old) data
+    if not df_purchases_value.empty:
+        df_purchases_value['out_value'] = df_purchases_value['out'].map(manual_prices).fillna(df_purchases_value['out_value'])
+    else:
+        df_purchases_new['out_value'] = df_purchases_new['out'].map(manual_prices).fillna(df_purchases_new['out_value'])
+
     print("Valid new data %", df_purchases_new['out_value'].count()/df_purchases_new['out'].count()*100)
-    print("Valid values old data %", df_purchases_value['out_value'].count()/df_purchases_value['out'].count()*100)
+    if not df_purchases_value.empty:
+        print("Valid values old data %", df_purchases_value['out_value'].count()/df_purchases_value['out'].count()*100)
+    else:
+        print("Valid values old data %: N/A (DataFrame was empty)")
     
-    # Finally, concat new and old values into df_purchases_value
     print("\nConcatenating new rows to df_purchases_value")
-    df_purchases_value = pd.concat([df_purchases_value, df_purchases_new])
-    print(df_purchases_value.shape)
+    # After concat, ensure 'out_value' is consistently numeric
+    df_purchases_value = pd.concat([df_purchases_value, df_purchases_new], ignore_index=True)
+    df_purchases_value['out_value'] = pd.to_numeric(df_purchases_value['out_value'], errors='coerce') # Force to numeric
+    df_purchases_value['src_value'] = pd.to_numeric(df_purchases_value['src_value'], errors='coerce') # Force to numeric
+    print(f"Final df_purchases_value shape: {df_purchases_value.shape}")
     
-    # Sort & Reset index
     df_purchases_value.sort_values(by='timestamp', inplace=True)
     df_purchases_value.reset_index(drop=True, inplace=True)
           
-    # Drop duplicates
     df_purchases_value = df_purchases_value.drop_duplicates(
                               subset = ['timestamp', 'user'],
                               keep = 'last').reset_index(drop = True)
           
-    print("\nSaving df_purchases_value to pickle")
-    df_purchases_value.to_pickle('../processed_dataframes/df_purchases_value.pkl')
-    
-    
+    print("\nSaving df_purchases_value to parquet")
+    df_purchases_value.to_parquet(df_purchases_value_path)
     
     
 if __name__ == '__main__':
-    
+    parser = argparse.ArgumentParser(description="Generate or append to df_purchases_value.parquet.")
+    parser.add_argument('--initial-rows', type=int, help='Limit the number of rows processed from df_purchases on the initial run (when df_purchases_value.parquet does not exist).')
+    args = parser.parse_args()
+
     lockfile_path = "../processed_dataframes/df_purchases_value.lock"
     
     if os.path.isfile(lockfile_path):
         print("Lockfile exists, exiting...")
     else:
-        # Create lockfile
         with open(lockfile_path, "w") as lockfile:
             lockfile.write("locked")
             
-        # Processing rows
-        process_new_rows()
+        process_new_rows(initial_rows_limit=args.initial_rows)
         
-        # Remove lockfile
         print("Removing lockfile...")
         try:
             os.remove(lockfile_path)
-        except OSError as e: # name the Exception `e`
-            print("Failed with:"), e.strerror # look what it says
-            print("Error code:"), e.code 
+        except OSError as e:
+            print(f"Failed to remove lockfile: {e.strerror} (Error code: {e.errno})")
         
         print("All done!")

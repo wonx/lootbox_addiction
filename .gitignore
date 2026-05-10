@@ -14,3 +14,13 @@ flask_app/output.log
 *~
 processed_dataframes/df_purchases_analytic_weekly/
 Zendle et al. 2020/*.csv
+
+# Ignore generated Parquet data files
+processed_dataframes/*.parquet
+processed_dataframes/df_purchases_analytic_weekly/*.parquet
+
+# Ignore Parquet files from scraping (these are also data)
+lootbox_db_scraping/df_pickles/*.parquet
+
+# Ignore backup folders
+plkbak/

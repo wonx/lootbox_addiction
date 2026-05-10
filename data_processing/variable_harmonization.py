@@ -101,7 +101,7 @@ def generate_weekly_analytics():
         print("Generating analytic dataset for ending date:", date)
         print(get_analytic_dataset(df_purchases_dailyaggregate, datelimit=date).shape)
         df_purchases_analytic = get_analytic_dataset(df_purchases_dailyaggregate, datelimit=date)
-        df_purchases_analytic.to_pickle(f'../processed_dataframes/df_purchases_analytic_weekly/{date}_df_purchases_analytic.pkl')
+        df_purchases_analytic.to_parquet(f'../processed_dataframes/df_purchases_analytic_weekly/{date}_df_purchases_analytic.parquet')
 
 
 
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         
     # Import df_purchases_value dataframe
     print("Importing df_purchases_value dataframe...")
-    df_purchases_value = pd.read_pickle('../processed_dataframes/df_purchases_value.pkl')
+    df_purchases_value = pd.read_parquet('../processed_dataframes/df_purchases_value.parquet')
     #print(df_purchases_value.sample(4))
     print(df_purchases_value.shape)
     print(df_purchases_value.info())
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     print(df_purchases_value.info())
 
     # Convert out_value to float
-    df_purchases_value['out_value'] = df_purchases_value['out_value'].str.replace(' ', '') # A few values appear as '1 327.00' instead of '1327.00'
+    #df_purchases_value['out_value'] = df_purchases_value['out_value'].str.replace(' ', '') # A few values appear as '1 327.00' instead of '1327.00'
     df_purchases_value['out_value'] = df_purchases_value['out_value'].replace('', np.nan) # There could be empty strings too
     df_purchases_value['out_value'] = df_purchases_value['out_value'].astype(float) # Convert out_value to float
 
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     
     # Save to pickle
     print("Saving df_purchases_dailyaggregate to pickle file...")
-    df_purchases_dailyaggregate.to_pickle('../processed_dataframes/df_purchases_dailyaggregate.pkl')
+    df_purchases_dailyaggregate.to_parquet('../processed_dataframes/df_purchases_dailyaggregate.parquet')
     
     # Generate weekly analytic datasets
     print("Generating weekly analytic datasets...")
@@ -152,7 +152,7 @@ if __name__ == '__main__':
     # Generate whole analytic dataset (kinda redundant...)
     print("Generating analytic dataset for the whole data...")
     df_purchases_analytic = get_analytic_dataset(df_purchases_dailyaggregate)
-    df_purchases_analytic.to_pickle('../processed_dataframes/df_purchases_analytic.pkl')
+    df_purchases_analytic.to_parquet('../processed_dataframes/df_purchases_analytic.parquet')
     
     print("All done!")
     

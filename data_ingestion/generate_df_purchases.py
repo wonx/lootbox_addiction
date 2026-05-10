@@ -12,22 +12,22 @@ import os
 import argparse
 
 
-def generate_full_dataframe(csv_path='../data_ingestion/csv/', output_file="../processed_dataframes/df_purchases.pkl"):
+def generate_full_dataframe(csv_path='../data_ingestion/csv/', output_file="../processed_dataframes/df_purchases.parquet"):
     print(f"Compiling data from {csv_path} to main dataframe at {output_file}")
     all_files = glob.glob(os.path.join(csv_path , "*.csv"))
     df = pd.concat((pd.read_csv(f) for f in all_files), ignore_index=True, axis=0)
     df['timestamp'] = df['timestamp'].astype(int) # Force them to be int, sometimes they appear as float in the csv for some reason
     df['time'] = df['time'].astype(int)
     print(df.info())
-    df.to_pickle(output_file)
+    df.to_parquet(output_file)
     print("Full dataframe generated at", output_file) 
     print(df.shape)
     return df
     
-def append_new_data(csv_path="../data_ingestion/csv/", output_file="../processed_dataframes/df_purchases.pkl"):
+def append_new_data(csv_path="../data_ingestion/csv/", output_file="../processed_dataframes/df_purchases.parquet"):
     print(f"Appending new data from {csv_path} to main dataframe at {output_file}")
     #main_df = output_file
-    main_df = pd.read_pickle(output_file)
+    main_df = pd.read_parquet(output_file)
     # Get a list of all the CSV files in the folder
     csv_files = [f for f in os.listdir(csv_path) if f.endswith('.csv')]
     sorted_csv_files = sorted(csv_files, reverse=True)
@@ -42,7 +42,7 @@ def append_new_data(csv_path="../data_ingestion/csv/", output_file="../processed
     main_df['time'] = main_df['time'].astype(int)
     main_df['timestamp'] = main_df['timestamp'].astype(int)
     print("  After concatenating: ", main_df.shape)
-    main_df.to_pickle(output_file)
+    main_df.to_parquet(output_file)
     print("...done")
     
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
                         help='Append new data')
     parser.add_argument('--csv_path', type=str, default='../data_ingestion/csv/',
                         help='Output pickle dataframe name with path')
-    parser.add_argument('--output_file', type=str, default='../processed_dataframes/df_purchases.pkl',
+    parser.add_argument('--output_file', type=str, default='../processed_dataframes/df_purchases.parquet',
                         help='Output pickle dataframe name with path')
     
     args = parser.parse_args()

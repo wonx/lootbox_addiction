@@ -104,7 +104,7 @@ def get_df_top_users(df_purchases):
         grouped_df = user_df.groupby(user_df['timestamp']).size().reset_index(name='count')
 
         # Set the timestamp column as the index of the dataframe
-        grouped_df['timestamp'] = pd.to_datetime(grouped_df['timestamp'], infer_datetime_format=True)
+        grouped_df['timestamp'] = pd.to_datetime(grouped_df['timestamp'])
         grouped_df.set_index('timestamp', inplace=True)
 
         # Create a new dataframe with a row for each date
