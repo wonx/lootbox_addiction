@@ -307,15 +307,21 @@ if __name__ == '__main__':
     if os.path.isfile(lockfile_path):
         print("Lockfile exists, exiting...")
     else:
-        with open(lockfile_path, "w") as lockfile:
-            lockfile.write("locked")
-            
-        process_new_rows(initial_rows_limit=args.initial_rows)
-        
-        print("Removing lockfile...")
         try:
-            os.remove(lockfile_path)
-        except OSError as e:
-            print(f"Failed to remove lockfile: {e.strerror} (Error code: {e.errno})")
-        
+            with open(lockfile_path, "w") as lockfile:
+                lockfile.write("locked")
+
+            process_new_rows(initial_rows_limit=args.initial_rows)
+        except Exception as e:
+            print(f"An error occurred during processing: {e}")
+            # Optionally re-raise the exception if you want the scheduler to know it failed
+            # raise
+        finally:
+            # This block will always execute, regardless of whether an exception occurred
+            if os.path.isfile(lockfile_path): # Check if it still exists before trying to remove
+                print("Removing lockfile...")
+                try:
+                    os.remove(lockfile_path)
+                except OSError as e:
+                    print(f"Failed to remove lockfile: {e.strerror} (Error code: {e.errno}). You might need to remove it manually.")
         print("All done!")
